@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession,create_async_engine,async_sessio
 from sqlalchemy.orm import declarative_base, relationship, mapped_column, Mapped,DeclarativeBase
 
 
-engine = create_async_engine("sqlite+aiosqlite:///mi_base_de_datos.db", echo=True,pool_pre_ping=3600)
+engine = create_async_engine("postgresql+asyncpg://snake_meta_user:UDnZCTrikRMOQ7iKZekrMYQ8kdcriCZc@dpg-cookl1v79t8c73f5eua0-a.oregon-postgres.render.com/snake_meta", echo=True)
 async_session = async_sessionmaker(engine, expire_on_commit=False)
 
 class Base(AsyncAttrs, DeclarativeBase):

@@ -1,0 +1,5 @@
+DB_USER=snake_meta_user
+DB_PASSWORD=UDnZCTrikRMOQ7iKZekrMYQ8kdcriCZc
+DB_HOST=dpg-cookl1v79t8c73f5eua0-a.oregon-postgres.render.com
+DB_NAME=snake_meta
+DB_PORT=5432
