@@ -1,13 +1,9 @@
-from ast import List
-import asyncio
-import json
+
 from typing import Dict
 from fastapi import Body
 from pydantic import BaseModel
-from Database.models.DataBaseModel import async_session, Usuario, Reporte
-from sqlalchemy import func, select,insert, Select
-import sqlalchemy
-from sqlalchemy.ext.asyncio import AsyncSession,async_sessionmaker
+from Database.models.DataBaseModel import async_session, Usuario
+from sqlalchemy import func, select
 from Database.models.PasswordHash import nuevo_token,crear_hash,verificar_hash
 
 

@@ -6,7 +6,7 @@ from sqlalchemy.orm import sessionmaker
 from typing import Annotated, Dict
 from Database.models.DataBaseModel import Usuario, engine
 from Database.models.PasswordHash import verificar_token
-from Database.queries.userFuntions import insert_usuario,all_usuarios,get_usuario_nombre
+from Database.queries.userFuntions import insert_usuario,all_usuarios
 from .base_models.user import User
 
 

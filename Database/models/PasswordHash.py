@@ -5,7 +5,7 @@ from passlib.context import CryptContext
 Clave = "Clave Segura Persona"
 
 
-async def nuevo_token(Nombre:str,id:int expires_in=86400):
+async def nuevo_token(Nombre:str,id:int):
         return jwt.encode(
             {'id': id, 'nombre':Nombre},
             Clave, algorithm='HS256')
