@@ -5,6 +5,8 @@ import asyncio
 Clave = "Clave Segura Persona"
 
 
+
+
 async def nuevo_token(Nombre:str,id:int):
         return jwt.encode(
             {'id': id, 'nombre':Nombre},
@@ -34,11 +36,17 @@ async def crear_hash(Valor:str)->str:
     return hash_password
 
 #verifica el has si es corecto Devuelve un true si es no es por x o y razon devuelve false
-async def verificar_hash(password_entrada:str,password_base:str) -> bool:
+
+async def verificar_hash(password_entrada: str, password_base: str) -> bool:
     pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-    if pwd_context.verify(password_entrada , password_base):
+    
+    # Hashear la contraseña de entrada
+    password_entrada_hasheada = pwd_context.hash(password_entrada)
+
+    # Verificar si la contraseña hasheada coincide con la contraseña base
+    if pwd_context.verify(password_entrada, password_base):
         return True
-    else: 
+    else:
         return False
 
 #ejemplo de uso de funcion asyncio.run(crear_hash("asdasdsdad"))

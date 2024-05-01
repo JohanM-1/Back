@@ -143,7 +143,7 @@ async def Login_Verificacion(correo:str,password:str ) -> Response:
                 if user_now:
                     #objeto de clase CryptContext para Hasheo de la contraseña
                     
-                    if verificar_hash(password, user_now.contraseña): #verificacion de la contraseña
+                    if(await verificar_hash(password, user_now.contraseña)): #verificacion de la contraseña
                         token = await nuevo_token(user_now.nombre,user_now.idUsuario)
                         return Response(status=True,message="Inicio de sesión exitoso",data=str(user_now),access_token=token)
                         
