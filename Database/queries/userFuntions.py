@@ -56,7 +56,7 @@ async def insert_usuario(
                     return {"error": f"Usuario ya registrado: {existing_user.nombre}"}
 
                 # Create a new user object
-                contraseña_hash = crear_hash(contraseña)
+                contraseña_hash = await crear_hash(contraseña)
                 usuario = Usuario(
                     nombre=nombres,
                     correo=correo,

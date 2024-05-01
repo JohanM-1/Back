@@ -19,7 +19,7 @@ class Usuario(Base):
     correo: Mapped[str] = mapped_column(String(45))
     direccion: Mapped[str] = mapped_column(String(45))
     contraseña: Mapped[str] = mapped_column(String(45))
-    nombre: Mapped[str] = mapped_column(String(45))
+    nombre: Mapped[str] = mapped_column(String(100))
     apellido: Mapped[str] = mapped_column(String(45))
     fecha_n: Mapped[str] = mapped_column(String(45))
     rol: Mapped[str] = mapped_column(String(45))
