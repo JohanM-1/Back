@@ -73,7 +73,6 @@ async def insert_usuario(
         print({"error": f"Error al insertar usuario: {str(e)}"})
         return {"error": f"Error al insertar usuario: {str(e)}"}
 
-        
 
 async def all_usuarios():
     """
@@ -127,8 +126,6 @@ async def get_user_base(identifier: Union[int, str]) -> Optional[Usuario]:
         # Manejo de la excepción
         print(f"Se ha producido un error al realizar la búsqueda: {error}")
         return None
-
-
 
 
 async def Login_Verificacion(correo:str,password:str ) -> Response:
