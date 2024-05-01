@@ -8,11 +8,17 @@ from Database.models.DataBaseModel import async_session, Usuario, Reporte
 from sqlalchemy import func, select,insert, Select
 import sqlalchemy
 from sqlalchemy.ext.asyncio import AsyncSession,async_sessionmaker
-
+from Database.models.PasswordHash import nuevo_token,crear_hash,verificar_hash
 
 
 #Insertar un Nuevo usaurio a la db
 
+#interface para guardar la respuesta en este formato
+class Response(BaseModel):
+    status: bool
+    message: str
+    data: str | None = None
+    access_token: str | None = None
 
 async def insert_usuario(
     
@@ -54,17 +60,18 @@ async def insert_usuario(
                     return {"error": f"Usuario ya registrado: {existing_user.nombre}"}
 
                 # Create a new user object
+                contraseña_hash = crear_hash(contraseña)
                 usuario = Usuario(
                     nombre=nombres,
                     correo=correo,
                     direccion=direccion,
-                    contraseña=contraseña,
+                    contraseña=contraseña_hash,
                     apellido=apellido,
                     fecha_n=fecha_n,
                     rol=rol,
                     edad=edad,
                 )
-
+                
                 session.add(usuario)
                 await session.commit()
                 session.refresh(usuario)
@@ -107,28 +114,7 @@ async def all_usuarios():
         pass
 
 
-#asyncio.run(insert_usuario("pedro"))
-#print(asyncio.run(all_usuarios()))
-
-'''
-print(
-    asyncio.run(
-        insert_usuario(
-            nombres="juandaded",
-            correo="juan@example.com",
-            direccion="Calle 123, Ciudad ABC",
-            contraseña="miContraseña",
-            apellido="Perez",
-            fecha_n="1990-01-01",
-            rol="usuario",
-            edad=30,
-        )
-    )
-)
-'''
-
-
-async def get_usuario_id(id :int):
+async def get_user_base(id :int)->Usuario:
     try:  
         async with async_session() as session:
             async with session.begin():
@@ -137,47 +123,43 @@ async def get_usuario_id(id :int):
                 result = await session.execute(stm)
                 user_obj = result.scalar()  # Utilizamos result.scalar() para obtener un único resultado
                 if user_obj:
-                    print(user_obj)
-                    print(id)
+                    return user_obj
                 else:
-                    print(f"No se encontró un usuario con el ID {id}")
+                    return None
     except Exception as error:
         # Manejo de la excepción
         print(f"Se ha producido un error al realizar la busqueda: {error}")
+        return None
 
 
-async def get_usuario_nombre(user:Usuario ):
-    class Response(BaseModel):
-        status: str
-        message: str
-        data: str | None = None
-        access_token: str | None = None
 
-    
-    from passlib.context import CryptContext
-    import jwt
-    from Database.models.PasswordHash import Clave 
+
+
+
+
+async def Login_Verificacion(name:str,password:str ) -> dict:
+
     try:  
         async with async_session() as session:
             async with session.begin():
             
-                stm = select(Usuario).where(Usuario.nombre == user.nombre)
+                stm = select(Usuario).where(Usuario.nombre == name)
                 result = await session.execute(stm)
-                user_obj = result.scalar()  
-                if user_obj:
-                    pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto") #objeto de clase CryptContext para Hasheo de la contraseña
-                    if pwd_context.verify(user.contraseña, user_obj.contraseña): #verificacion de la contraseña
-                        print(user_obj)
-                        token = jwt.encode({'id': user_obj.idUsuario, 'nombre': user_obj.nombre}, Clave, algorithm='HS256')
-                        return Response(status="success",message="Inicio de sesión exitoso",data=str(user_obj),access_token=token)
+                user_now = result.scalar()  
+                if user_now:
+                    #objeto de clase CryptContext para Hasheo de la contraseña
+                    
+                    if verificar_hash(password, user_now.contraseña): #verificacion de la contraseña
+                        token = nuevo_token(name,user_now.idUsuario)
+                        return Response(status=True,message="Inicio de sesión exitoso",data=str(user_now),access_token=token)
                         
                     else:
-                        return Response(status="fail",message="Inicio de sesión fallido Contraseña incorrecta")
+                        return Response(status=False,message="Contraseña incorrecta")
                 else:
-                    return Response(status="fail",message="Inicio de sesión fallido Usuario incorrecto")
+                    return Response(status=False,message="Usuario incorrecto")
 
     except Exception as error:
         # Manejo de la excepción
-        return(Response(status="ERROR",message=error))
+        return(Response(status=False,message=error))
 
         
