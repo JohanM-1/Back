@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession,create_async_engine,async_sessio
 from sqlalchemy.orm import declarative_base, relationship, mapped_column, Mapped,DeclarativeBase
 
 
-engine = create_async_engine("postgresql+asyncpg://snake_meta_user:UDnZCTrikRMOQ7iKZekrMYQ8kdcriCZc@dpg-cookl1v79t8c73f5eua0-a.oregon-postgres.render.com/snake_meta", echo=True)
+engine = create_async_engine("postgresql+asyncpg://snake_meta_fe37_user:M1FtFMQ4o9a8YTH8LEvF5uYPknsgKerg@dpg-cop61v63e1ms73c98f7g-a.oregon-postgres.render.com/snake_meta_fe37", echo=True)
 async_session = async_sessionmaker(engine, expire_on_commit=False)
 
 class Base(AsyncAttrs, DeclarativeBase):
@@ -18,8 +18,8 @@ class Usuario(Base):
     idUsuario: Mapped[int] = mapped_column(Integer, primary_key=True)
     correo: Mapped[str] = mapped_column(String(45))
     direccion: Mapped[str] = mapped_column(String(45))
-    contraseña: Mapped[str] = mapped_column(String(45))
-    nombre: Mapped[str] = mapped_column(String(100))
+    contraseña: Mapped[str] = mapped_column(String(100))
+    nombre: Mapped[str] = mapped_column(String(45))
     apellido: Mapped[str] = mapped_column(String(45))
     fecha_n: Mapped[str] = mapped_column(String(45))
     rol: Mapped[str] = mapped_column(String(45))
@@ -39,7 +39,7 @@ class Serpiente(Base):
     __tablename__ = 'serpientes'
     idSerpiente: Mapped[int] = mapped_column(Integer, primary_key=True)
     nombre3: Mapped[str] = mapped_column(String(45))
-    nombreCientifico: Mapped[str] = mapped_column(String(45))
+    nombreCientifico: Mapped[str] = mapped_column(String(100))
     reino: Mapped[str] = mapped_column(String(45))
     especie: Mapped[str] = mapped_column(String(45))
     clase: Mapped[str] = mapped_column(String(45))
@@ -51,8 +51,8 @@ class Georeferencia(Base):
     __tablename__ = 'georeferencia'
     idGeoreferencia: Mapped[int] = mapped_column(Integer, primary_key=True)
     fecha: Mapped[str] = mapped_column(String(20))
-    zona: Mapped[str] = mapped_column(String(45))
-    coordenadas: Mapped[str] = mapped_column(String(45))
+    zona: Mapped[str] = mapped_column(String(100))
+    coordenadas: Mapped[str] = mapped_column(String(200))
     serpientes_id_serpientes: Mapped[int] = mapped_column(Integer, ForeignKey('serpientes.idSerpiente'))
     usuario_id_usuario: Mapped[int] = mapped_column(Integer, ForeignKey('usuario.idUsuario'))
     desarrollador_id_desarrollador: Mapped[int] = mapped_column(Integer, ForeignKey('desarrollador.idDesarrollador'))
@@ -64,9 +64,9 @@ class Georeferencia(Base):
 class Reporte(Base):
     __tablename__ = 'reporte'
     idReporte: Mapped[int] = mapped_column(Integer, primary_key=True)
-    titulo: Mapped[str] = mapped_column(String(45))
-    descripcion: Mapped[str] = mapped_column(String(45))
-    comentario: Mapped[str] = mapped_column(String(45))
+    titulo: Mapped[str] = mapped_column(String(100))
+    descripcion: Mapped[str] = mapped_column(String(1000))
+    comentario: Mapped[str] = mapped_column(String(250))
     serpientes_id_serpientes: Mapped[int] = mapped_column(Integer, ForeignKey('serpientes.idSerpiente'))
     usuario_id_usuario: Mapped[int] = mapped_column(Integer, ForeignKey('usuario.idUsuario'))
     desarrollador_id_desarrollador: Mapped[int] = mapped_column(Integer, ForeignKey('desarrollador.idDesarrollador'))
@@ -81,4 +81,3 @@ async def async_main() -> None:
 
     await engine.dispose()
     
-

@@ -1,7 +1,7 @@
 
 import jwt
 from passlib.context import CryptContext
-
+import asyncio
 Clave = "Clave Segura Persona"
 
 
@@ -30,7 +30,7 @@ async def crear_hash(Valor:str)->str:
     #objeto de clase CryptContext para Hasheo de la contraseña
     pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
     hash_password = pwd_context.hash(Valor)
-    
+    print(hash_password)
     return hash_password
 
 #verifica el has si es corecto Devuelve un true si es no es por x o y razon devuelve false
@@ -40,3 +40,5 @@ async def verificar_hash(password_entrada:str,password_base:str) -> bool:
         return True
     else: 
         return False
+
+#ejemplo de uso de funcion asyncio.run(crear_hash("asdasdsdad"))

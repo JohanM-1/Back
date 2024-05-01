@@ -1,20 +1,16 @@
 
-from typing import Dict
+from typing import Dict, Optional, Union
 from fastapi import Body
 from pydantic import BaseModel
 from Database.models.DataBaseModel import async_session, Usuario
 from sqlalchemy import func, select
 from Database.models.PasswordHash import nuevo_token,crear_hash,verificar_hash
-
+from routers.base_models.user import Response 
 
 #Insertar un Nuevo usaurio a la db
 
 #interface para guardar la respuesta en este formato
-class Response(BaseModel):
-    status: bool
-    message: str
-    data: str | None = None
-    access_token: str | None = None
+
 
 async def insert_usuario(
     
@@ -71,15 +67,13 @@ async def insert_usuario(
                 session.add(usuario)
                 await session.commit()
                 session.refresh(usuario)
-        return {"message": f"Usuario: {usuario.nombre} agregado exitosamente"}
+        return {"message": f"Usuario: {usuario.nombre} agregado exitosamente y su contraseña {usuario.contraseña}"}
 
     except Exception as e:
         print({"error": f"Error al insertar usuario: {str(e)}"})
         return {"error": f"Error al insertar usuario: {str(e)}"}
 
         
-
-
 
 async def all_usuarios():
     """
@@ -110,43 +104,47 @@ async def all_usuarios():
         pass
 
 
-async def get_user_base(id :int)->Usuario:
+async def get_user_base(identifier: Union[int, str]) -> Optional[Usuario]:
     try:  
         async with async_session() as session:
             async with session.begin():
-            
-                stm = select(Usuario).where(Usuario.idUsuario == id)
+                if isinstance(identifier, int):
+                    stm = select(Usuario).where(Usuario.idUsuario == identifier)
+                elif isinstance(identifier, str):
+                    stm = select(Usuario).where(Usuario.nombre == identifier)
+                else:
+                    raise ValueError("El identificador debe ser un entero o una cadena de caracteres")
+                
                 result = await session.execute(stm)
                 user_obj = result.scalar()  # Utilizamos result.scalar() para obtener un único resultado
-                if user_obj:
-                    return user_obj
+                
+                if(user_obj):
+                    return  user_obj
                 else:
                     return None
+                
     except Exception as error:
         # Manejo de la excepción
-        print(f"Se ha producido un error al realizar la busqueda: {error}")
+        print(f"Se ha producido un error al realizar la búsqueda: {error}")
         return None
 
 
 
 
-
-
-
-async def Login_Verificacion(name:str,password:str ) -> dict:
+async def Login_Verificacion(correo:str,password:str ) -> Response:
 
     try:  
         async with async_session() as session:
             async with session.begin():
             
-                stm = select(Usuario).where(Usuario.nombre == name)
+                stm = select(Usuario).where(Usuario.correo == correo)
                 result = await session.execute(stm)
                 user_now = result.scalar()  
                 if user_now:
                     #objeto de clase CryptContext para Hasheo de la contraseña
                     
                     if verificar_hash(password, user_now.contraseña): #verificacion de la contraseña
-                        token = nuevo_token(name,user_now.idUsuario)
+                        token = await nuevo_token(user_now.nombre,user_now.idUsuario)
                         return Response(status=True,message="Inicio de sesión exitoso",data=str(user_now),access_token=token)
                         
                     else:
@@ -156,6 +154,6 @@ async def Login_Verificacion(name:str,password:str ) -> dict:
 
     except Exception as error:
         # Manejo de la excepción
-        return(Response(status=False,message=error))
+        return Response(status=False, message=str(error))
 
         

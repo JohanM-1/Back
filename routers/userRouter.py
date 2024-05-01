@@ -6,8 +6,9 @@ from sqlalchemy.orm import sessionmaker
 from typing import Annotated, Dict
 from Database.models.DataBaseModel import Usuario, engine
 from Database.models.PasswordHash import verificar_token
-from Database.queries.userFuntions import insert_usuario,all_usuarios
-from .base_models.user import User
+from Database.queries.userFuntions import insert_usuario,all_usuarios,Login_Verificacion
+
+from .base_models.user import User,UserLogin,Response
 
 
 router = APIRouter()
@@ -33,5 +34,14 @@ async def create_user(user_data:User):
 async def get_all_users():
     response = await all_usuarios()
     return response
+
+@router.post("/users/login",tags=["users"])
+async def login_user(user_data:UserLogin):
+    Response = await Login_Verificacion(user_data.email,user_data.password)
+    if(Response.status):
+        raise HTTPException(status_code=200, detail=Response.message)
+    else:
+        raise HTTPException(status_code=401, detail=Response.message)
+    pass
 
 

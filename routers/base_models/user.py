@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, constr
 
 class User(BaseModel):
     nombres: str | None = None
@@ -9,3 +9,13 @@ class User(BaseModel):
     fecha_n: str | None = None
     rol: str | None = None
     edad: int | None = None
+    
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str
+    
+class Response(BaseModel):
+    status: bool
+    message: str
+    data: str | None = None
+    access_token: str | None = None
