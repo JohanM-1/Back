@@ -19,3 +19,12 @@ class Response(BaseModel):
     message: str
     data: str | None = None
     access_token: str | None = None
+
+class Snake(BaseModel):
+  nombre3: str   # Common name of the snake (required)
+  nombreCientifico: str   # Scientific name (required)
+  reino: str   # Kingdom (required)
+  especie: str   # Species (required)
+  clase: str   # Class (required)
+  genero: str  # Genus (required)
+  familia: str  # Family (required)

@@ -147,7 +147,7 @@ async def Login_Verificacion(correo:str,password:str ) -> Response:
                     else:
                         return Response(status=False,message="Contraseña incorrecta")
                 else:
-                    return Response(status=False,message="Usuario incorrecto")
+                    return Response(status=False,message="Correo incorrecto")
 
     except Exception as error:
         # Manejo de la excepción
