@@ -27,7 +27,7 @@ async def insert_georeferencia(
   Returns:
       Dict[str, str]: A dictionary with a success message or an error message.
   """
-
+  
   try:
     async with async_session() as session:
       async with session.begin():
@@ -50,3 +50,32 @@ async def insert_georeferencia(
   except Exception as e:
     print({"error": f"Error al insertar georeferencia: {str(e)}"})
     return {"error": f"Error al insertar georeferencia: {str(e)}"}
+
+
+async def all_georeferencias():
+    """
+    Retrieves all georeferencias information from the 'Georeferencia' table asynchronously.
+
+    Returns:
+        A list of dictionaries, where each dictionary represents a georeferencias row.
+        On error, returns an informative error message.
+    """
+
+    try:
+        async with async_session() as session:
+            async with session.begin():
+                # Fetch all user data using select()
+                query = select(Georeferencia)
+                result = await session.execute(query)
+                usuarios = tuple(georeferencias for georeferencias in result.scalars())  # Extract Georeferencia objects
+                return usuarios  
+            
+    except Exception as error:
+        # Log the error for debugging purposes
+        print(f"Error retrieving user data: {error}")
+        return {"error": f"An error occurred: {error}"}  # Informative error message
+
+    finally:
+        # No explicit engine disposal is necessary within the function scope
+        # as the async context manager handles it automatically.
+        pass

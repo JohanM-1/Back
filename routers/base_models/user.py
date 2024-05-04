@@ -28,3 +28,5 @@ class Snake(BaseModel):
   clase: str   # Class (required)
   genero: str  # Genus (required)
   familia: str  # Family (required)
+
+
