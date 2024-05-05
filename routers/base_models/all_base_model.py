@@ -45,7 +45,6 @@ class Georeferencia(BaseModel):
 
 
 class Reporte(BaseModel):
-    idReporte: int = Field(..., description="Unique identifier for the report")
     titulo: str = Field(..., max_length=100, description="Report title")
     descripcion: str = Field(..., max_length=1000, description="Detailed description of the snake sighting, including location, appearance, and behavior.")
     comentario: str = Field(..., max_length=250, description="Optional comments about the report, such as identification assistance or additional observations.")

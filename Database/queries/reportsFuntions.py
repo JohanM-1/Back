@@ -1,21 +1,20 @@
-from typing import Dict
+from typing import Dict, Optional, Union
 from fastapi import Body
-from Database.models.DataBaseModel import async_session, Usuario, Reporte
-from sqlalchemy import select
+from Database.models.DataBaseModel import async_session,Reporte
+from sqlalchemy import delete, select, update
 from Database.models.PasswordHash import crear_hash
 from routers.base_models.user import Response 
 
 #funcion para crear un reporte
-async def insert_usuario(
+async def insert_report(
     
-    nombres: str = Body(...),  # Make all parameters mandatory
-    correo: str = Body(...),
-    direccion: str = Body(...),
-    contraseña: str = Body(...),
-    apellido: str = Body(...),
-    fecha_n: str = Body(...),
-    rol: str = Body(...),
-    edad: int = Body(...),
+    titulo: str = Body(...),  # Make all parameters mandatory
+    descripcion: str = Body(...),
+    comentario: str = Body(...),
+
+    serpientes_id_serpientes: int = Body(...),
+    usuario_id_usuario: int = Body(...),
+    desarrollador_id_desarrollador: int = Body(...)
 ) -> Dict[str, str]:
     """
     Inserts a new user with the provided information into the 'usuarios' table asynchronously.
@@ -37,38 +36,124 @@ async def insert_usuario(
     try:
         async with async_session() as session:
             async with session.begin():
-                # Check for existing user with the same name
-                existing_user = await session.execute(
-                    select(Usuario).where(Usuario.nombre == nombres)
-                )
-                existing_user = existing_user.scalar()
-                if existing_user:
-                    return {"error": f"Usuario ya registrado: {existing_user.nombre}"}
 
-                # Create a new user object
-                contraseña_hash = await crear_hash(contraseña)
-                usuario = Usuario(
-                    nombre=nombres,
-                    correo=correo,
-                    direccion=direccion,
-                    contraseña=contraseña_hash,
-                    apellido=apellido,
-                    fecha_n=fecha_n,
-                    rol=rol,
-                    edad=edad,
+                # Create a new Report object
+                Report = Reporte(
+                    titulo=titulo,
+                    descripcion=descripcion,
+                    comentario=comentario,
+                    serpientes_id_serpientes=serpientes_id_serpientes,
+                    usuario_id_usuario=usuario_id_usuario,
+                    desarrollador_id_desarrollador=desarrollador_id_desarrollador
                 )
                 
-                session.add(usuario)
+                session.add(Report)
                 await session.commit()
-                session.refresh(usuario)
-        return {"message": f"Usuario: {usuario.nombre} agregado exitosamente y su contraseña {usuario.contraseña}"}
+                session.refresh(Report)
+        return {"message": f"titulo: {Report.titulo} agregado exitosamente y su descripcion {Report.descripcion}"}
 
     except Exception as e:
         print({"error": f"Error al insertar usuario: {str(e)}"})
         return {"error": f"Error al insertar usuario: {str(e)}"}
 
 #funcion para ver el reporte segun el id
+async def get_report_base(identifier: Union[int, str]) -> Optional[Reporte]:
+    try:  
+        async with async_session() as session:
+            async with session.begin():
+                if isinstance(identifier, int):
+                    stm = select(Reporte).where(Reporte.idReporte == identifier)
+                elif isinstance(identifier, str):
+                    stm = select(Reporte).where(Reporte.titulo == identifier)
+                else:
+                    raise ValueError("El identificador debe ser un entero o una cadena de caracteres")
+                
+                result = await session.execute(stm)
+                report_obj = result.scalar()  # Utilizamos result.scalar() para obtener un único resultado
+                
+                if(report_obj):
+                    return  report_obj
+                else:
+                    return None
+    except Exception as error:
+        # Manejo de la excepción
+        print(f"Se ha producido un error al realizar la búsqueda: {error}")
+        return None
+    
 
 #funcion para Eliminar un reporte 
 
+async def delete_report(id:int):
+    report = get_report_base(id)
+    if(report != None):
+        try:  
+            async with async_session() as session:
+                async with session.begin():
+                    stm = delete(Reporte).where(Reporte.idReporte == report.idReporte)
+
+                    await session.execute(stm)
+                    await session.commit()
+                    return(f"Se ha eliminado el reporte con el id: {id}")
+                    
+        except Exception as error:
+            # Manejo de la excepción
+            return (f"Se ha producido un error al realizar la búsqueda: {error}")
+        pass
+
+    else:
+        return {"message": "No existe ese un reporte con ese id"}
+
 #funcion para Actualizar un reporte
+
+async def update_report(id:int,titulo:str,descripcion:str):
+    report = get_report_base(id)
+    if(report != None):
+        try:  
+            async with async_session() as session:
+                async with session.begin():
+                    stmt = (
+                        update(Reporte)
+                        .where(Reporte.idReporte == report.idReporte)
+                        .values(titulo=titulo,descripcion=descripcion)
+                        )
+
+                    await session.execute(stmt)
+                    await session.commit()
+                    return(f"Se ha Actualizacod el reporte con el id: {id}")
+                    
+        except Exception as error:
+            # Manejo de la excepción
+            return (f"Se ha producido un error al realizar la búsqueda: {error}")
+        pass
+
+    else:
+        return {"message": "No existe ese un reporte con ese id"}
+    
+    
+async def all_reportes():
+    """
+    Retrieves all georeferencias information from the 'Georeferencia' table asynchronously.
+
+    Returns:
+        A list of dictionaries, where each dictionary represents a georeferencias row.
+        On error, returns an informative error message.
+    """
+
+    try:
+        async with async_session() as session:
+            async with session.begin():
+                # Fetch all user data using select()
+                query = select(Reporte)
+                result = await session.execute(query)
+                usuarios = tuple(reporte for reporte in result.scalars())  # Extract Georeferencia objects
+                return usuarios  
+            
+    except Exception as error:
+        # Log the error for debugging purposes
+        print(f"Error retrieving user data: {error}")
+        return {"error": f"An error occurred: {error}"}  # Informative error message
+
+    finally:
+        # No explicit engine disposal is necessary within the function scope
+        # as the async context manager handles it automatically.
+        pass
