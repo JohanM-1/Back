@@ -38,6 +38,7 @@ async def insert_georeferencia(
             coordenadas=coordenadas,
             serpientes_id_serpientes=serpientes_id_serpientes,
             usuario_id_usuario=usuario_id_usuario,
+            desarrollador_id_desarrollador = 1
         )
 
         session.add(georeferencia)

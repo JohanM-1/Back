@@ -1,13 +1,13 @@
 from __future__ import annotations
 from fastapi import APIRouter
 from Database.queries.snakeFuntions import insert_serpiente,all_Snakes
-from .base_models.user import Snake
+from .base_models.all_base_model import Serpiente
 
 
 router = APIRouter()
 
 @router.post("/Snake/create", tags=["Snake"])
-async def create_snake(snake_data: Snake):
+async def create_snake(snake_data: Serpiente):
     """
     Creates a new snake record in the database.
 
