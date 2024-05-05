@@ -5,7 +5,7 @@ from sqlalchemy import select
 from Database.models.PasswordHash import crear_hash
 from routers.base_models.user import Response 
 
-
+#funcion para crear un reporte
 async def insert_usuario(
     
     nombres: str = Body(...),  # Make all parameters mandatory
@@ -66,3 +66,9 @@ async def insert_usuario(
     except Exception as e:
         print({"error": f"Error al insertar usuario: {str(e)}"})
         return {"error": f"Error al insertar usuario: {str(e)}"}
+
+#funcion para ver el reporte segun el id
+
+#funcion para Eliminar un reporte 
+
+#funcion para Actualizar un reporte
