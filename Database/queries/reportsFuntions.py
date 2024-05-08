@@ -89,7 +89,7 @@ async def delete_report(id:int):
         try:  
             async with async_session() as session:
                 async with session.begin():
-                    stm = delete(Reporte).where(Reporte.idReporte == report.idReporte)
+                    stm = delete(Reporte).where(Reporte.idReporte == id)
 
                     await session.execute(stm)
                     await session.commit()
@@ -111,16 +111,21 @@ async def update_report(id:int,titulo:str,descripcion:str):
         try:  
             async with async_session() as session:
                 async with session.begin():
-                    stmt = (
-                        update(Reporte)
-                        .where(Reporte.idReporte == report.idReporte)
-                        .values(titulo=titulo,descripcion=descripcion)
-                        )
+                    report = await get_report_base(id)
 
-                    await session.execute(stmt)
-                    await session.commit()
-                    return(f"Se ha Actualizacod el reporte con el id: {id}")
-                    
+                    if(report != None):
+                            
+                        stmt = (
+                            update(Reporte)
+                            .where(Reporte.idReporte == id)
+                            .values(titulo=titulo,descripcion=descripcion)
+                            )
+
+                        await session.execute(stmt)
+                        await session.commit()
+                        return(f"Se ha Actualizacod el reporte con el id: {id}")
+                    else:
+                        return (f"Se ha producido un error al realizar la búsqueda: ID{id} no econtrado")
         except Exception as error:
             # Manejo de la excepción
             return (f"Se ha producido un error al realizar la búsqueda: {error}")
@@ -145,8 +150,8 @@ async def all_reportes():
                 # Fetch all user data using select()
                 query = select(Reporte)
                 result = await session.execute(query)
-                usuarios = tuple(reporte for reporte in result.scalars())  # Extract Georeferencia objects
-                return usuarios  
+                reporte = tuple(reporte for reporte in result.scalars())  # Extract Georeferencia objects
+                return reporte  
             
     except Exception as error:
         # Log the error for debugging purposes
