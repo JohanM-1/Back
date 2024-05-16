@@ -1,6 +1,16 @@
 from fastapi import FastAPI
 from routers import user_router,snake_router,desarrollador_router,georefence_router,report_router  # Import the router object
+
+from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Permitir acceso desde cualquier origen
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE"],  # Métodos HTTP permitidos
+    allow_headers=["*"],  # Permitir todos los encabezados en las solicitudes
+)
 
 # Include the router in the app
 app.include_router(user_router.router)
