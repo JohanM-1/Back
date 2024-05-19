@@ -1,5 +1,8 @@
 from pydantic import BaseModel, EmailStr, constr
 
+from routers.base_models.all_base_model import Usuario
+
+
 class User(BaseModel):
     nombres: str | None = None
     correo: EmailStr | None = None
@@ -17,7 +20,7 @@ class UserLogin(BaseModel):
 class Response(BaseModel):
     status: bool
     message: str
-    data: str | None = None
+    data: User | None = None
     access_token: str | None = None
 
 class Snake(BaseModel):

@@ -37,7 +37,7 @@ async def get_all_users():
 async def login_user(user_data:UserLogin):
     Response = await Login_Verificacion(user_data.email,user_data.password)
     if(Response.status):
-        raise HTTPException(status_code=200, detail=Response.message)
+        return Response
     else:
         raise HTTPException(status_code=401, detail=Response.message)
     pass

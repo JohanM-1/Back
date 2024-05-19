@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from Database.models.DataBaseModel import async_session, Usuario
 from sqlalchemy import func, select
 from Database.models.PasswordHash import nuevo_token,crear_hash,verificar_hash
-from routers.base_models.user import Response 
+from routers.base_models.user import Response, User 
 
 #Insertar un Nuevo usaurio a la db
 
@@ -137,12 +137,20 @@ async def Login_Verificacion(correo:str,password:str ) -> Response:
                 stm = select(Usuario).where(Usuario.correo == correo)
                 result = await session.execute(stm)
                 user_now = result.scalar()  
+
                 if user_now:
                     #objeto de clase CryptContext para Hasheo de la contraseña
                     
                     if(await verificar_hash(password, user_now.contraseña)): #verificacion de la contraseña
+
+                        user_date = User (
+                            nombres= user_now.nombre+user_now.apellido,
+                            correo=user_now.correo,
+                            fecha_n=user_now.fecha_n
+                        )
+                        
                         token = await nuevo_token(user_now.nombre,user_now.idUsuario)
-                        return Response(status=True,message="Inicio de sesión exitoso",data=str(user_now),access_token=token)
+                        return Response(status=True,message="Inicio de sesión exitoso",access_token=token,data=user_date)
                         
                     else:
                         return Response(status=False,message="Contraseña incorrecta")
