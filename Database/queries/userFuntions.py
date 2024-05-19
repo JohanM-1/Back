@@ -144,7 +144,7 @@ async def Login_Verificacion(correo:str,password:str ) -> Response:
                     if(await verificar_hash(password, user_now.contraseña)): #verificacion de la contraseña
 
                         user_date = User (
-                            nombres= user_now.nombre+user_now.apellido,
+                            nombres= user_now.nombre,
                             correo=user_now.correo,
                             fecha_n=user_now.fecha_n
                         )
