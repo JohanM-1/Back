@@ -1,4 +1,5 @@
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field 
+from typing import Optional, Annotated
 
 class Usuario(BaseModel):
     
@@ -12,10 +13,7 @@ class Usuario(BaseModel):
     edad: int = Field(..., description="User's age")
 
 
-class Desarrollador(BaseModel):
-    
-    nombre2: str = Field(..., max_length=20, description="Developer's name")
-    direccion2: str = Field(..., max_length=45, description="Developer's address")
+
 
 
 
@@ -50,6 +48,6 @@ class Reporte(BaseModel):
     comentario: str = Field(..., max_length=250, description="Optional comments about the report, such as identification assistance or additional observations.")
 
     # Foreign Key relationships (if using SQLAlchemy)
-    serpientes_id_serpientes: int = Field(..., description="Foreign key to Serpiente.idSerpiente",nullable=True)
+    serpientes_id_serpientes: Optional[Annotated[int,Field(..., description="Foreign key to Serpiente.idSerpiente")]] 
     usuario_id_usuario: int = Field(..., description="Foreign key to Usuario.idUsuario")
 

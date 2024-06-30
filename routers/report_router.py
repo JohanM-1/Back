@@ -15,7 +15,6 @@ async def create_Georeference(Reporte_data: Reporte):
         comentario=Reporte_data.comentario,
         serpientes_id_serpientes=Reporte_data.serpientes_id_serpientes,
         usuario_id_usuario=Reporte_data.usuario_id_usuario,
-        desarrollador_id_desarrollador=Reporte_data.desarrollador_id_desarrollador
     )
 
     return response

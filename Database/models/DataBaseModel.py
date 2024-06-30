@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession,create_async_engine,async_sessio
 from sqlalchemy.orm import declarative_base, relationship, mapped_column, Mapped,DeclarativeBase
 
 
-engine = create_async_engine("postgresql+asyncpg://snake_meta_fe37_user:M1FtFMQ4o9a8YTH8LEvF5uYPknsgKerg@dpg-cop61v63e1ms73c98f7g-a.oregon-postgres.render.com/snake_meta_fe37", echo=True)
+engine = create_async_engine("postgresql+asyncpg://snake_meta_1x4w_user:XrAq5prt9MecjzQVBAZ87B4gKX7FYZV5@dpg-cq0p79bv2p9s73ce93s0-a.oregon-postgres.render.com/snake_meta_1x4w", echo=True)
 async_session = async_sessionmaker(engine, expire_on_commit=False)
 
 class Base(AsyncAttrs, DeclarativeBase):
@@ -28,11 +28,7 @@ class Usuario(Base):
     def __repr__(self):
         return f"Usuario(id={self.idUsuario}, nombre='{self.nombre} {self.apellido}', correo='{self.correo}')"
 
-class Desarrollador(Base):
-    __tablename__ = 'desarrollador'
-    idDesarrollador: Mapped[int] = mapped_column(Integer, primary_key=True)
-    nombre2: Mapped[str] = mapped_column(String(20))
-    direccion2: Mapped[str] = mapped_column(String(45))
+
 
 
 class Serpiente(Base):
@@ -55,7 +51,6 @@ class Georeferencia(Base):
     coordenadas: Mapped[str] = mapped_column(String(200))
     serpientes_id_serpientes: Mapped[int] = mapped_column(Integer, ForeignKey('serpientes.idSerpiente'))
     usuario_id_usuario: Mapped[int] = mapped_column(Integer, ForeignKey('usuario.idUsuario'))
-    desarrollador_id_desarrollador: Mapped[int] = mapped_column(Integer, ForeignKey('desarrollador.idDesarrollador'))
 
     serpiente: Mapped[Serpiente] = relationship('Serpiente')
     usuario: Mapped[Usuario] = relationship('Usuario')
@@ -67,11 +62,10 @@ class Reporte(Base):
     titulo: Mapped[str] = mapped_column(String(100))
     descripcion: Mapped[str] = mapped_column(String(1000))
     comentario: Mapped[str] = mapped_column(String(250))
-    serpientes_id_serpientes: Mapped[int] = mapped_column(Integer, ForeignKey('serpientes.idSerpiente'))
+    serpientes_id_serpientes: Mapped[Optional[int]] = mapped_column(Integer, ForeignKey('serpientes.idSerpiente'))
     usuario_id_usuario: Mapped[int] = mapped_column(Integer, ForeignKey('usuario.idUsuario'))
-    desarrollador_id_desarrollador: Mapped[int] = mapped_column(Integer, ForeignKey('desarrollador.idDesarrollador'))
 
-    serpiente: Mapped[Serpiente] = relationship('Serpiente',nullable=True)
+    serpiente: Mapped[Serpiente] = relationship('Serpiente')
     usuario: Mapped[Usuario] = relationship('Usuario')
 
 # Creacion de tablas en la base de datos
@@ -80,4 +74,3 @@ async def async_main() -> None:
         await conn.run_sync(Base.metadata.create_all)
 
     await engine.dispose()
-    

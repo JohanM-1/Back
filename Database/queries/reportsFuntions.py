@@ -5,6 +5,7 @@ from sqlalchemy import delete, select, update
 from Database.models.PasswordHash import crear_hash
 from routers.base_models.user import Response 
 
+
 #funcion para crear un reporte
 async def insert_report(
     
@@ -14,7 +15,6 @@ async def insert_report(
 
     serpientes_id_serpientes: int = Body(...),
     usuario_id_usuario: int = Body(...),
-    desarrollador_id_desarrollador: int = Body(...)
 ) -> Dict[str, str]:
     """
     Inserts a new user with the provided information into the 'usuarios' table asynchronously.
@@ -43,8 +43,7 @@ async def insert_report(
                     descripcion=descripcion,
                     comentario=comentario,
                     serpientes_id_serpientes=serpientes_id_serpientes,
-                    usuario_id_usuario=usuario_id_usuario,
-                    desarrollador_id_desarrollador=desarrollador_id_desarrollador
+                    usuario_id_usuario=usuario_id_usuario
                 )
                 
                 session.add(Report)
