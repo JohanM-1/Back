@@ -18,7 +18,7 @@ async def verificar_token(token:str):
     try:
         # Intenta decodificar el token con la clave secreta payload["nombre"],payload['id'],payload["rol"]
         payload = jwt.decode(token, Clave, algorithms=['HS256'])
-        return (payload["nombre"],payload['id'],payload["rol"])
+        return ({'nombre':payload["nombre"],'id':payload['id'],'rol':payload["rol"]})
     except jwt.ExpiredSignatureError:
         # El token ha expirado
         return ("sesion expirada")
