@@ -50,7 +50,6 @@ class Reporte(BaseModel):
     comentario: str = Field(..., max_length=250, description="Optional comments about the report, such as identification assistance or additional observations.")
 
     # Foreign Key relationships (if using SQLAlchemy)
-    serpientes_id_serpientes: int = Field(..., description="Foreign key to Serpiente.idSerpiente")
+    serpientes_id_serpientes: int = Field(..., description="Foreign key to Serpiente.idSerpiente",nullable=True)
     usuario_id_usuario: int = Field(..., description="Foreign key to Usuario.idUsuario")
-    desarrollador_id_desarrollador: int = Field(..., description="Foreign key to Desarrollador.idDesarrollador")
 

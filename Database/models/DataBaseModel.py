@@ -71,7 +71,7 @@ class Reporte(Base):
     usuario_id_usuario: Mapped[int] = mapped_column(Integer, ForeignKey('usuario.idUsuario'))
     desarrollador_id_desarrollador: Mapped[int] = mapped_column(Integer, ForeignKey('desarrollador.idDesarrollador'))
 
-    serpiente: Mapped[Serpiente] = relationship('Serpiente')
+    serpiente: Mapped[Serpiente] = relationship('Serpiente',nullable=True)
     usuario: Mapped[Usuario] = relationship('Usuario')
 
 # Creacion de tablas en la base de datos

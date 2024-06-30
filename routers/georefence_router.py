@@ -8,15 +8,6 @@ router = APIRouter()
 
 @router.post("/Georeference/create", tags=["Georeference"])
 async def create_Georeference(Georeferencia_data: Georeferencia):
-    """
-    Creates a new snake record in the database.
-
-    Args:
-        snake_data (Serpiente): The snake data to be inserted.
-
-    Returns:
-        Dict[str, str]: A dictionary containing a success message or error message.
-    """
     response = await insert_georeferencia(
         fecha = Georeferencia_data.fecha,
         zona = Georeferencia_data.zona,
