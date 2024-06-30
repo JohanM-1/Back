@@ -149,7 +149,7 @@ async def Login_Verificacion(correo:str,password:str ) -> Response:
                             fecha_n=user_now.fecha_n
                         )
                         
-                        token = await nuevo_token(user_now.nombre,user_now.idUsuario)
+                        token = await nuevo_token(user_now.nombre,user_now.idUsuario,user_now.rol)
                         return Response(status=True,message="Inicio de sesión exitoso",access_token=token,data=user_date)
                         
                     else:
@@ -162,3 +162,35 @@ async def Login_Verificacion(correo:str,password:str ) -> Response:
         return Response(status=False, message=str(error))
 
         
+async def Login_Verificacion(correo:str,password:str ) -> Response:
+
+    try:  
+        async with async_session() as session:
+            async with session.begin():
+            
+                stm = select(Usuario).where(Usuario.correo == correo)
+                result = await session.execute(stm)
+                user_now = result.scalar()  
+
+                if user_now:
+                    #objeto de clase CryptContext para Hasheo de la contraseña
+                    
+                    if(await verificar_hash(password, user_now.contraseña)): #verificacion de la contraseña
+
+                        user_date = User (
+                            nombres= user_now.nombre,
+                            correo=user_now.correo,
+                            fecha_n=user_now.fecha_n
+                        )
+                        
+                        token = await nuevo_token(user_now.nombre,user_now.idUsuario,user_now.rol)
+                        return Response(status=True,message="Inicio de sesión exitoso",access_token=token,data=user_date)
+                        
+                    else:
+                        return Response(status=False,message="Contraseña incorrecta")
+                else:
+                    return Response(status=False,message="Correo incorrecto")
+
+    except Exception as error:
+        # Manejo de la excepción
+        return Response(status=False, message=str(error))

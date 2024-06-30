@@ -7,17 +7,18 @@ Clave = "Clave Segura Persona"
 
 
 
-async def nuevo_token(Nombre:str,id:int):
+async def nuevo_token(Nombre:str,id:int,rol:str):
         return jwt.encode(
-            {'id': id, 'nombre':Nombre},
+            {'id': id, 'nombre':Nombre,'rol' :rol},
             Clave, algorithm='HS256')
 
     #verificar si un token es valido
+
 async def verificar_token(token:str):
     try:
-        # Intenta decodificar el token con la clave secreta
+        # Intenta decodificar el token con la clave secreta payload["nombre"],payload['id'],payload["rol"]
         payload = jwt.decode(token, Clave, algorithms=['HS256'])
-        return (payload["nombre"],payload['idUsuario'])
+        return (payload["nombre"],payload['id'],payload["rol"])
     except jwt.ExpiredSignatureError:
         # El token ha expirado
         return ("sesion expirada")
