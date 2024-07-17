@@ -1,13 +1,14 @@
 from typing import Dict
 from fastapi import Body
-from Database.models.DataBaseModel import Desarrollador, async_session
+from Database.models.DataBaseModel import  async_session 
+from Database.models.DataBaseModel import Comentario as ComentarioDb
+from routers.base_models.all_base_model import Comentario as ComentarioModel
 from sqlalchemy import select
 
 
 
-async def insert_desarrollador(
-    nombre2: str = Body(...),
-    direccion2: str = Body(...),
+async def insert_coment(
+    formComentario:ComentarioModel
 ) -> Dict[str, str]:
     """
     Inserts a new developer record with the provided information into a table (assuming the table name is 'desarrollador') asynchronously.
@@ -24,13 +25,18 @@ async def insert_desarrollador(
         async with async_session() as session:
             async with session.begin():
                 # Create a new developer object (assuming the table name is 'desarrollador')
-                desarrollador = Desarrollador(nombre2=nombre2, direccion2=direccion2)
+                newComent = ComentarioDb(
+                    contenido = formComentario.contenido,
+                    fecha_creacion = formComentario.fecha_creacion,
+                    reporte_id_reporte = formComentario.report_id_report,
+                    usuario_id_usuario = formComentario.report_id_report,
+                )
 
-                session.add(desarrollador)
+                session.add(newComent)
                 await session.commit()
-                session.refresh(desarrollador)
+                session.refresh(newComent)
                 return {
-                    "message": f"Desarrollador creado exitosamente: ID {desarrollador.nombre2}"  # Assuming an id field exists
+                    "message": f"Desarrollador creado exitosamente: ID {newComent.idComentario}"  # Assuming an id field exists
                 }
 
     except Exception as e:
@@ -38,7 +44,7 @@ async def insert_desarrollador(
         return {"error": f"Error al insertar desarrollador: {str(e)}"}
 
 
-async def all_desarrolladores():
+async def all_coments_for_reportId(idReport:int):
     """
     Retrieves all developer information from the 'desarrollador' table asynchronously.
 
@@ -51,13 +57,12 @@ async def all_desarrolladores():
         async with async_session() as session:
             async with session.begin():
                 # Fetch all developer data using select()
-                query = select(Desarrollador)
+                query = select(ComentarioDb)
                 result = await session.execute(query)
-                desarrolladores = tuple(desarrollador for desarrollador in result.scalars())  # Extract Desarrollador objects
-                return desarrolladores
+                ComentarioDb = tuple(ComentarioDb for ComentarioDb in result.scalars())  # Extract Desarrollador objects
+                return ComentarioDb
 
     except Exception as error:
         # Log the error for debugging purposes
         print(f"Error retrieving developer data: {error}")
         return {"error": f"An error occurred: {error}"}  # Informative error message
-

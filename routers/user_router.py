@@ -7,6 +7,7 @@ from typing import Annotated, Dict
 from Database.models.DataBaseModel import Usuario, engine
 from Database.models.PasswordHash import verificar_token
 from Database.queries.userFuntions import insert_usuario,all_usuarios,Login_Verificacion
+from routers.base_models.all_base_model import UserTokenModelResp
 
 
 from .base_models.user import User,UserLogin,Response
@@ -68,12 +69,32 @@ async def login_for_access_token(
         )
     return Token(access_token=user.access_token, token_type="bearer")
 
-@router.get("/verfi")
+
 async def verificar_token_route(token: Annotated[str, Depends(oauth2_scheme)]):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+        
     var = await verificar_token(token)
-    return var
 
+    if (var is not UserTokenModelResp):
+        return var
+    else:
+        
+        raise credentials_exception
 
+async def get_current_active_user(
+    current_user: Annotated[User, Depends(verificar_token_route)],
+):
+    return current_user
+
+@router.get("/users/me/", response_model=UserTokenModelResp)
+async def read_users_me(
+    current_user: Annotated[UserTokenModelResp, Depends(get_current_active_user)],
+):
+    return current_user
 
 @router.post("/users/login",tags=["users"])
 async def login_user_route(user_data:UserLogin):

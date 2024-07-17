@@ -2,12 +2,14 @@
 import jwt
 from passlib.context import CryptContext
 import asyncio
+
+from routers.base_models.all_base_model import UserTokenModelResp
 Clave = "Clave Segura Persona"
 
 
 
 
-async def nuevo_token(Nombre:str,id:int,rol:str):
+async def nuevo_token(Nombre:str,id:int,rol:str)->UserTokenModelResp:
         return jwt.encode(
             {'id': id, 'nombre':Nombre,'rol' :rol},
             Clave, algorithm='HS256')
@@ -18,7 +20,8 @@ async def verificar_token(token:str):
     try:
         # Intenta decodificar el token con la clave secreta payload["nombre"],payload['id'],payload["rol"]
         payload = jwt.decode(token, Clave, algorithms=['HS256'])
-        return ({'nombre':payload["nombre"],'id':payload['id'],'rol':payload["rol"]})
+        user = UserTokenModelResp(id=payload['id'],nombre=payload["nombre"],rol=payload["rol"])
+        return user
     except jwt.ExpiredSignatureError:
         # El token ha expirado
         return ("sesion expirada")

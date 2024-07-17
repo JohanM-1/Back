@@ -1,6 +1,11 @@
 from pydantic import BaseModel, EmailStr, Field 
 from typing import Optional, Annotated
 
+class UserTokenModelResp(BaseModel):
+    id: int
+    nombre: str
+    rol: str
+
 class Usuario(BaseModel):
     
     correo: EmailStr = Field(..., description="User's email address")
@@ -12,7 +17,14 @@ class Usuario(BaseModel):
     rol: str = Field(..., max_length=45, description="User's role (e.g., admin, user)")
     edad: int = Field(..., description="User's age")
 
+class Comentario(BaseModel):
+    
+    contenido: str = Field(..., max_length=1000, description="Coment Content")
+    fecha_creacion: str = Field(..., max_length=45, description="Coment's create date")
 
+        # Foreign Key relationships (if using SQLAlchemy)
+    report_id_report: int = Field(..., description="Foreign key to Reporte.idReporte")
+    usuario_id_usuario: int = Field(..., description="Foreign key to Usuario.idUsuario")
 
 
 
@@ -26,6 +38,7 @@ class Serpiente(BaseModel):
     clase: str = Field(..., max_length=45, description="Taxonomic class")
     genero: str = Field(..., max_length=45, description="Snake genus")
     familia: str = Field(..., max_length=45, description="Snake family")
+    imagen: str = Field(..., max_length=200, description="Snake image url")
 
 
 
@@ -42,7 +55,7 @@ class Georeferencia(BaseModel):
 
 
 
-class Reporte(BaseModel):
+class ReporteModel(BaseModel):
     titulo: str = Field(..., max_length=100, description="Report title")
     descripcion: str = Field(..., max_length=1000, description="Detailed description of the snake sighting, including location, appearance, and behavior.")
     comentario: str = Field(..., max_length=250, description="Optional comments about the report, such as identification assistance or additional observations.")

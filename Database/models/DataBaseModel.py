@@ -41,7 +41,8 @@ class Serpiente(Base):
     clase: Mapped[str] = mapped_column(String(45))
     genero: Mapped[str] = mapped_column(String(45))
     familia: Mapped[str] = mapped_column(String(45))
-
+    imagen: Mapped[str] = mapped_column(String(200))
+    venenosa:Mapped[bool] = mapped_column(bool)
 
 class Georeferencia(Base):
     __tablename__ = 'georeferencia'
@@ -55,6 +56,19 @@ class Georeferencia(Base):
     serpiente: Mapped[Serpiente] = relationship('Serpiente')
     usuario: Mapped[Usuario] = relationship('Usuario')
 
+
+class Comentario(Base):
+    __tablename__ = 'comentario'
+    idComentario: Mapped[int] = mapped_column(Integer, primary_key=True)
+    contenido: Mapped[str] = mapped_column(String(1000))
+    fecha_creacion: Mapped[DateTime] = mapped_column(DateTime)
+    reporte_id_reporte: Mapped[int] = mapped_column(Integer, ForeignKey('Reporte.idReporte'))
+    usuario_id_usuario: Mapped[int] = mapped_column(Integer, ForeignKey('usuario.idUsuario'))
+
+    reporte: Mapped[Reporte] = relationship('Reporte')
+    usuario: Mapped[Usuario] = relationship('Usuario')
+    def __repr__(self):
+        return {'fecha de creacion':self.fecha_creacion,'contenido':self.contenido}
 
 class Reporte(Base):
     __tablename__ = 'reporte'
@@ -74,3 +88,5 @@ async def async_main() -> None:
         await conn.run_sync(Base.metadata.create_all)
 
     await engine.dispose()
+
+

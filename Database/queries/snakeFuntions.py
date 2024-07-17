@@ -13,6 +13,7 @@ async def insert_serpiente(
     clase: str = Body(...),
     genero: str = Body(...),
     familia: str = Body(...),
+    imagen: str = Body(...),
 ) -> Dict[str, str]:
   """
   Inserts a new snake record with the provided information into the 'serpientes' table asynchronously.
@@ -50,6 +51,7 @@ async def insert_serpiente(
             clase=clase,
             genero=genero,
             familia=familia,
+            imagen=imagen,
         )
 
         session.add(serpiente)

@@ -1,23 +1,32 @@
 from __future__ import annotations
-from fastapi import APIRouter, HTTPException
+from typing import Annotated
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 from Database.queries.reportsFuntions import get_report_base,insert_report,all_reportes,update_report,delete_report
-from .base_models.all_base_model import Reporte
+from routers.user_router import get_current_active_user
+from .base_models.all_base_model import ReporteModel, UserTokenModelResp
 
 
 router = APIRouter()
 
 @router.post("/Reporte/create", tags=["Reporte"])
-async def create_Georeference(Reporte_data: Reporte):
+async def create_Report(
+    Reporte_data: ReporteModel,
+    current_user: Annotated[UserTokenModelResp, Depends(get_current_active_user)]
+    ):
+    Reporte_data.usuario_id_usuario = current_user.id
     response = await insert_report(
-        titulo=Reporte_data.titulo,
-        descripcion=Reporte_data.descripcion,
-        comentario=Reporte_data.comentario,
-        serpientes_id_serpientes=Reporte_data.serpientes_id_serpientes,
-        usuario_id_usuario=Reporte_data.usuario_id_usuario,
+        Reporte_data
     )
 
     return response
+
+
+@router.get("/users/me/items/", tags=["Reporte"])
+async def read_own_items(
+    current_user: Annotated[UserTokenModelResp, Depends(get_current_active_user)],
+):
+    return (current_user.id)
 
 @router.get("/Reporte/id", tags=["Reporte"])
 async def get_report_id(id:int):

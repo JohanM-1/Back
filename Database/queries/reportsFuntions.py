@@ -3,19 +3,16 @@ from fastapi import Body
 from Database.models.DataBaseModel import async_session,Reporte
 from sqlalchemy import delete, select, update
 from Database.models.PasswordHash import crear_hash
+from routers.base_models.all_base_model import ReporteModel
 from routers.base_models.user import Response 
 
 
 #funcion para crear un reporte
 async def insert_report(
     
-    titulo: str = Body(...),  # Make all parameters mandatory
-    descripcion: str = Body(...),
-    comentario: str = Body(...),
+    report:ReporteModel
 
-    serpientes_id_serpientes: int = Body(...),
-    usuario_id_usuario: int = Body(...),
-) -> Dict[str, str]:
+):
     """
     Inserts a new user with the provided information into the 'usuarios' table asynchronously.
 
@@ -39,17 +36,17 @@ async def insert_report(
 
                 # Create a new Report object
                 Report = Reporte(
-                    titulo=titulo,
-                    descripcion=descripcion,
-                    comentario=comentario,
-                    serpientes_id_serpientes=serpientes_id_serpientes,
-                    usuario_id_usuario=usuario_id_usuario
+                    titulo=report.titulo,
+                    descripcion=report.descripcion,
+                    comentario=report.comentario,
+                    serpientes_id_serpientes=report.serpientes_id_serpientes,
+                    usuario_id_usuario=report.usuario_id_usuario
                 )
                 
                 session.add(Report)
                 await session.commit()
                 session.refresh(Report)
-        return {"message": f"titulo: {Report.titulo} agregado exitosamente y su descripcion {Report.descripcion}"}
+        return (report)
 
     except Exception as e:
         print({"error": f"Error al insertar usuario: {str(e)}"})
