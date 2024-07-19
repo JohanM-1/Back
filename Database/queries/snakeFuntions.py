@@ -4,16 +4,13 @@ from Database.models.DataBaseModel import Georeferencia, Serpiente, async_sessio
 from sqlalchemy import select
 from Database.models.PasswordHash import crear_hash
 from routers.base_models.user import Response
+from routers.base_models.all_base_model import Serpiente as serpienteModelo
+
+
+
 
 async def insert_serpiente(
-    nombre3: str = Body(...),
-    nombreCientifico: str = Body(...),
-    reino: str = Body(...),
-    especie: str = Body(...),
-    clase: str = Body(...),
-    genero: str = Body(...),
-    familia: str = Body(...),
-    imagen: str = Body(...),
+    serpiente:serpienteModelo
 ) -> Dict[str, str]:
   """
   Inserts a new snake record with the provided information into the 'serpientes' table asynchronously.
@@ -44,14 +41,15 @@ async def insert_serpiente(
 
         # Create a new snake object
         serpiente = Serpiente(
-            nombre3=nombre3,
-            nombreCientifico=nombreCientifico,
-            reino=reino,
-            especie=especie,
-            clase=clase,
-            genero=genero,
-            familia=familia,
-            imagen=imagen,
+            nombre3=serpiente.nombre3,
+            nombreCientifico=serpiente.nombreCientifico,
+            reino=serpiente.reino,
+            especie=serpiente.especie,
+            clase=serpiente.clase,
+            genero=serpiente.genero,
+            familia=serpiente.familia,
+            imagen=serpiente.imagen,
+            venenosa=serpiente.venenosa,
         )
 
         session.add(serpiente)

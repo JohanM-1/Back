@@ -2,12 +2,12 @@ from __future__ import annotations
 import asyncio
 from typing import List, Optional
 
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, String
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String
 from sqlalchemy.ext.asyncio import AsyncSession,create_async_engine,async_sessionmaker,AsyncAttrs
 from sqlalchemy.orm import declarative_base, relationship, mapped_column, Mapped,DeclarativeBase
 
 
-engine = create_async_engine("postgresql+asyncpg://snake_meta_1x4w_user:XrAq5prt9MecjzQVBAZ87B4gKX7FYZV5@dpg-cq0p79bv2p9s73ce93s0-a.oregon-postgres.render.com/snake_meta_1x4w", echo=True)
+engine = create_async_engine("postgresql+asyncpg://snake_meta_db_local_user:1OLLl43SzKw9WWvTkk8WlAjYeCd4HHhk@dpg-cqcmk4mehbks738jfum0-a.oregon-postgres.render.com/snake_meta_db_local", echo=True)
 async_session = async_sessionmaker(engine, expire_on_commit=False)
 
 class Base(AsyncAttrs, DeclarativeBase):
@@ -42,7 +42,7 @@ class Serpiente(Base):
     genero: Mapped[str] = mapped_column(String(45))
     familia: Mapped[str] = mapped_column(String(45))
     imagen: Mapped[str] = mapped_column(String(200))
-    venenosa:Mapped[bool] = mapped_column(bool)
+    venenosa:Mapped[bool] = mapped_column(Boolean)
 
 class Georeferencia(Base):
     __tablename__ = 'georeferencia'
@@ -57,19 +57,6 @@ class Georeferencia(Base):
     usuario: Mapped[Usuario] = relationship('Usuario')
 
 
-class Comentario(Base):
-    __tablename__ = 'comentario'
-    idComentario: Mapped[int] = mapped_column(Integer, primary_key=True)
-    contenido: Mapped[str] = mapped_column(String(1000))
-    fecha_creacion: Mapped[DateTime] = mapped_column(DateTime)
-    reporte_id_reporte: Mapped[int] = mapped_column(Integer, ForeignKey('Reporte.idReporte'))
-    usuario_id_usuario: Mapped[int] = mapped_column(Integer, ForeignKey('usuario.idUsuario'))
-
-    reporte: Mapped[Reporte] = relationship('Reporte')
-    usuario: Mapped[Usuario] = relationship('Usuario')
-    def __repr__(self):
-        return {'fecha de creacion':self.fecha_creacion,'contenido':self.contenido}
-
 class Reporte(Base):
     __tablename__ = 'reporte'
     idReporte: Mapped[int] = mapped_column(Integer, primary_key=True)
@@ -81,6 +68,21 @@ class Reporte(Base):
 
     serpiente: Mapped[Serpiente] = relationship('Serpiente')
     usuario: Mapped[Usuario] = relationship('Usuario')
+
+
+class Comentario(Base):
+    __tablename__ = 'comentario'
+    idComentario: Mapped[int] = mapped_column(Integer, primary_key=True)
+    contenido: Mapped[str] = mapped_column(String(1000))
+    fecha_creacion: Mapped[DateTime] = mapped_column(DateTime)
+    reporte_id_reporte: Mapped[int] = mapped_column(Integer, ForeignKey('reporte.idReporte'))
+    usuario_id_usuario: Mapped[int] = mapped_column(Integer, ForeignKey('usuario.idUsuario'))
+
+    reporte: Mapped[Reporte] = relationship('Reporte')
+    usuario: Mapped[Usuario] = relationship('Usuario')
+    def __repr__(self):
+        return {'fecha de creacion':self.fecha_creacion,'contenido':self.contenido}
+    
 
 # Creacion de tablas en la base de datos
 async def async_main() -> None:
