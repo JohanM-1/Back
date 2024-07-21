@@ -1,13 +1,56 @@
-from typing import Dict
+from typing import Dict, Optional, Union
 from fastapi import Body
-from Database.models.DataBaseModel import Georeferencia, Serpiente, async_session, Usuario, Reporte
-from sqlalchemy import select
+from Database.models.DataBaseModel import Georeferencia, Serpiente, async_session, Usuario
+from sqlalchemy import delete, select
 from Database.models.PasswordHash import crear_hash
 from routers.base_models.user import Response
 from routers.base_models.all_base_model import Serpiente as serpienteModelo
 
 
+#funcion para ver el reporte segun el id
+async def get_snake_base(identifier: Union[int, str]) -> Optional[Serpiente]:
+    try:  
+        async with async_session() as session:
+            async with session.begin():
+                if isinstance(identifier, int):
+                    stm = select(Serpiente).where(Serpiente.idSerpiente == identifier)
+                elif isinstance(identifier, str):
+                    stm = select(Serpiente).where(Serpiente.nombre3 == identifier)
+                else:
+                    raise ValueError("El identificador debe ser un entero o una cadena de caracteres")
+                
+                result = await session.execute(stm)
+                report_obj = result.scalar()  # Utilizamos result.scalar() para obtener un único resultado
+                
+                if(report_obj):
+                    return  report_obj
+                else:
+                    return None
+    except Exception as error:
+        # Manejo de la excepción
+        print(f"Se ha producido un error al realizar la búsqueda: {error}")
+        return None
 
+
+async def delete_snake(id:int):
+    report = get_snake_base(id)
+    if(report != None):
+        try:  
+            async with async_session() as session:
+                async with session.begin():
+                    stm = delete(Serpiente).where(Serpiente.idSerpiente == id)
+
+                    await session.execute(stm)
+                    await session.commit()
+                    return(f"Se ha eliminado el reporte con el id: {id}")
+                    
+        except Exception as error:
+            # Manejo de la excepción
+            return (f"Se ha producido un error al realizar la búsqueda: {error}")
+        pass
+
+    else:
+        return {"message": "No existe ese un reporte con ese id"}
 
 async def insert_serpiente(
     serpiente:serpienteModelo

@@ -58,7 +58,7 @@ async def update_report_id(id:int,report_part:report_part):
         )
         return response
 
-@router.delete("/Reporte/Actualizar", tags=["Reporte"])
+@router.delete("/Reporte/Eliminar", tags=["Reporte"])
 async def delete_report_id(id:int):
     id_verif = await get_report_id(id)
     if (id_verif!=None):
