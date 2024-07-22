@@ -107,6 +107,38 @@ async def insert_serpiente(
     return {"error": f"Error al insertar serpiente: {str(e)}"}
 
 
+
+async def all_Snakes_poison(valid: bool):
+    """
+    Retrieves all Snake information from the 'Serpientes' table asynchronously.
+
+    Returns:
+        A list of dictionaries, where each dictionary represents a Snake row.
+        On error, returns an informative error message.
+    """
+
+    try:
+        async with async_session() as session:
+            async with session.begin():
+                # Fetch all user data using select()
+                query = select(Serpiente).where(Serpiente.venenosa == valid)
+                result = await session.execute(query)
+                usuarios = tuple(Snake for Snake in result.scalars())  # Extract Usuario objects
+                return usuarios  
+            
+    except Exception as error:
+        # Log the error for debugging purposes
+        print(f"Error retrieving user data: {error}")
+        return {"error": f"An error occurred: {error}"}  # Informative error message
+
+    finally:
+        # No explicit engine disposal is necessary within the function scope
+        # as the async context manager handles it automatically.
+        pass
+
+
+
+
 async def all_Snakes():
     """
     Retrieves all Snake information from the 'Serpientes' table asynchronously.

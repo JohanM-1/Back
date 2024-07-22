@@ -2,7 +2,7 @@ from __future__ import annotations
 from fastapi import APIRouter, Body, Depends, File, Form
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
-from Database.queries.snakeFuntions import get_snake_base, insert_serpiente,all_Snakes,delete_snake
+from Database.queries.snakeFuntions import all_Snakes_poison, get_snake_base, insert_serpiente,all_Snakes,delete_snake
 from .base_models.all_base_model import Serpiente
 from fastapi import FastAPI, HTTPException, UploadFile
 from typing import Annotated, List
@@ -87,4 +87,9 @@ async def delete_report_id(id:int):
 @router.get("/Snake/all", tags=["Snake"])
 async def get_all_snakes():
     response = await all_Snakes()
+    return response
+
+@router.get("/Snakes/poison", tags=["Snake"])
+async def get_all_snakes(valid: bool):
+    response = await all_Snakes_poison(valid)
     return response
