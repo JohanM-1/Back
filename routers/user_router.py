@@ -43,7 +43,9 @@ async def create_user(user_data:User):
             apellido=user_data.apellido,
             fecha_n=user_data.fecha_n,
             rol="usuario",
-            edad=user_data.edad,)
+            edad=user_data.edad,
+            imagen=user_data.imagen,
+            )
     return response
 
 
