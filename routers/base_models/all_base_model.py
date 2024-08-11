@@ -59,8 +59,7 @@ class Georeferencia(BaseModel):
 class ReporteModel(BaseModel):
     titulo: str = Field(..., max_length=100, description="Report title")
     descripcion: str = Field(..., max_length=1000, description="Detailed description of the snake sighting, including location, appearance, and behavior.")
-    comentario: str = Field(..., max_length=250, description="Optional comments about the report, such as identification assistance or additional observations.")
-
+    imagen: str = Field(..., max_length=200, description="report image url")
     # Foreign Key relationships (if using SQLAlchemy)
     serpientes_id_serpientes: Optional[Annotated[int,Field(..., description="Foreign key to Serpiente.idSerpiente")]] 
     usuario_id_usuario: int = Field(..., description="Foreign key to Usuario.idUsuario")

@@ -38,7 +38,6 @@ async def insert_report(
                 Report = Reporte(
                     titulo=report.titulo,
                     descripcion=report.descripcion,
-                    comentario=report.comentario,
                     serpientes_id_serpientes=report.serpientes_id_serpientes,
                     usuario_id_usuario=report.usuario_id_usuario
                 )

@@ -1,8 +1,9 @@
 from __future__ import annotations
 import asyncio
+import datetime
 from typing import List, Optional
 
-from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, func
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, func , Time ,Date
 from sqlalchemy.ext.asyncio import AsyncSession,create_async_engine,async_sessionmaker,AsyncAttrs
 from sqlalchemy.orm import declarative_base, relationship, mapped_column, Mapped,DeclarativeBase
 
@@ -15,8 +16,7 @@ class Base(AsyncAttrs, DeclarativeBase):
 
 
 class TimestampMixin(object):
-    created_at = Mapped[DateTime] = mapped_column(DateTime, default=func.now())
-    updated_at = Mapped[DateTime] = mapped_column(DateTime, default=func.now(), onupdate=func.now())
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
     
     @declared_attr
     def __tablename__(cls) -> str:
@@ -25,6 +25,8 @@ class TimestampMixin(object):
 class Usuario(Base):
     __tablename__ = 'usuario'
     idUsuario: Mapped[int] = mapped_column(Integer, primary_key=True)
+    
+    imagen: Mapped[str] = mapped_column(String(200))
     correo: Mapped[str] = mapped_column(String(45))
     direccion: Mapped[str] = mapped_column(String(45))
     contraseña: Mapped[str] = mapped_column(String(100))
@@ -50,7 +52,7 @@ class Serpiente(Base):
     clase: Mapped[str] = mapped_column(String(45))
     genero: Mapped[str] = mapped_column(String(45))
     familia: Mapped[str] = mapped_column(String(45))
-    imagen: Mapped[str] = mapped_column(String(200))
+    imagen: Mapped[str] = mapped_column(String(200),nullable=True)
     venenosa:Mapped[bool] = mapped_column(Boolean)
     descripcion:Mapped[str] = mapped_column(String(2000))
 
@@ -74,7 +76,8 @@ class Reporte(TimestampMixin,Base):
     __tablename__ = 'reporte'
     idReporte: Mapped[int] = mapped_column(Integer, primary_key=True)
     titulo: Mapped[str] = mapped_column(String(100))
-    descripcion: Mapped[str] = mapped_column(String(1000))
+    descripcion: Mapped[str] = mapped_column(String(1000),nullable=True)
+    imagen: Mapped[str] = mapped_column(String(200))
     serpientes_id_serpientes: Mapped[Optional[int]] = mapped_column(Integer, ForeignKey('serpientes.idSerpiente'))
     usuario_id_usuario: Mapped[int] = mapped_column(Integer, ForeignKey('usuario.idUsuario'))
     

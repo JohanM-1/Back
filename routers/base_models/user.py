@@ -12,6 +12,7 @@ class User(BaseModel):
     fecha_n: str | None = None
     rol: str | None = None
     edad: int | None = None
+    imagen: str | None = None
     
 class UserLogin(BaseModel):
     email: EmailStr

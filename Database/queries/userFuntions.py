@@ -22,6 +22,7 @@ async def insert_usuario(
     fecha_n: str = Body(...),
     rol: str = Body(...),
     edad: int = Body(...),
+    imagen: int = Body(...),
 ) -> Dict[str, str]:
     """
     Inserts a new user with the provided information into the 'usuarios' table asynchronously.
@@ -62,6 +63,7 @@ async def insert_usuario(
                     fecha_n=fecha_n,
                     rol=rol,
                     edad=edad,
+                    imagen=imagen,
                 )
                 
                 session.add(usuario)
