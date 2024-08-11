@@ -39,7 +39,8 @@ async def insert_report(
                     titulo=report.titulo,
                     descripcion=report.descripcion,
                     serpientes_id_serpientes=report.serpientes_id_serpientes,
-                    usuario_id_usuario=report.usuario_id_usuario
+                    usuario_id_usuario=report.usuario_id_usuario,
+                    imagen=report.imagen,
                 )
                 
                 session.add(Report)
