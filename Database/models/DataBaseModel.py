@@ -8,11 +8,12 @@ from sqlalchemy.ext.asyncio import AsyncSession,create_async_engine,async_sessio
 from sqlalchemy.orm import declarative_base, relationship, mapped_column, Mapped,DeclarativeBase
 
 from sqlalchemy.ext.declarative import declared_attr
-engine = create_async_engine("postgresql+asyncpg://snake_meta_db_local_user:1OLLl43SzKw9WWvTkk8WlAjYeCd4HHhk@dpg-cqcmk4mehbks738jfum0-a.oregon-postgres.render.com/snake_meta_db_local", echo=True)
+engine = create_async_engine("postgresql+asyncpg://snake_meta_db_local2_user:aXFm7kUKWCuvv1Ir6pamtOr4aRmBekga@dpg-cr1m5hbqf0us73fphrgg-a.oregon-postgres.render.com/snake_meta_db_local2", echo=True)
 async_session = async_sessionmaker(engine, expire_on_commit=False)
 
 class Base(AsyncAttrs, DeclarativeBase):
     pass
+
 
 
 class TimestampMixin(object):
@@ -26,7 +27,7 @@ class Usuario(Base):
     __tablename__ = 'usuario'
     idUsuario: Mapped[int] = mapped_column(Integer, primary_key=True)
     
-    imagen: Mapped[str] = mapped_column(String(200))
+    imagen: Mapped[str] = mapped_column(String(200),nullable=True)
     correo: Mapped[str] = mapped_column(String(45))
     direccion: Mapped[str] = mapped_column(String(45))
     contraseña: Mapped[str] = mapped_column(String(100))
@@ -104,5 +105,7 @@ async def async_main() -> None:
         await conn.run_sync(Base.metadata.create_all)
 
     await engine.dispose()
+
+
 
 
