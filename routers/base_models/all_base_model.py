@@ -40,6 +40,7 @@ class Serpiente(BaseModel):
     familia: str = Field(..., max_length=45, description="Snake family")
     imagen: str = Field(..., max_length=200, description="Snake image url")
     venenosa: bool = Field(...,description="Snake is poison ?  bool" )
+    descripcion: str = Field(..., max_length=1000, description="Detailed description of the snake sighting, including location, appearance, and behavior.")
 
 
 

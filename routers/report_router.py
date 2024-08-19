@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
-from Database.queries.reportsFuntions import get_report_base,insert_report,all_reportes,update_report,delete_report
+from Database.queries.reportsFuntions import get_report_base, get_report_base_user_id,insert_report,all_reportes,update_report,delete_report
 from routers.user_router import get_current_active_user
 from .base_models.all_base_model import ReporteModel, UserTokenModelResp
 
@@ -31,6 +31,16 @@ async def read_own_items(
 @router.get("/Reporte/id", tags=["Reporte"])
 async def get_report_id(id:int):
     response = await get_report_base(id)
+    if(response != None):
+        return response
+    else:
+        raise HTTPException(status_code=404, detail=f"Id no encontrado: {id}")
+    
+
+
+@router.get("/Reporte/id_user", tags=["Reporte"])
+async def get_report_id_user(id:int):
+    response = await get_report_base_user_id(id)
     if(response != None):
         return response
     else:

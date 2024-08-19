@@ -83,7 +83,7 @@ async def insert_serpiente(
         #     return {"error": f"Serpiente ya registrada: {existing_snake.nombreCientifico}"}
 
         # Create a new snake object
-        serpiente = Serpiente(
+        serpiente1 = Serpiente(
             nombre3=serpiente.nombre3,
             nombreCientifico=serpiente.nombreCientifico,
             reino=serpiente.reino,
@@ -93,13 +93,14 @@ async def insert_serpiente(
             familia=serpiente.familia,
             imagen=serpiente.imagen,
             venenosa=serpiente.venenosa,
+            descripcion=serpiente.descripcion,
         )
 
-        session.add(serpiente)
+        session.add(serpiente1)
         await session.commit()
-        session.refresh(serpiente)
+        session.refresh(serpiente1)
         return {
-            "message": f"Serpiente creada exitosamente: ID {serpiente.idSerpiente}"
+            "message": f"Serpiente creada exitosamente: ID {serpiente1.idSerpiente}"
         }
 
   except Exception as e:

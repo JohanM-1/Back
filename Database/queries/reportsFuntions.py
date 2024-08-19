@@ -1,11 +1,12 @@
 from typing import Dict, Optional, Union
 from fastapi import Body
 from Database.models.DataBaseModel import async_session,Reporte
-from sqlalchemy import delete, select, update
+from sqlalchemy import delete, select, update 
 from Database.models.PasswordHash import crear_hash
 from routers.base_models.all_base_model import ReporteModel
 from routers.base_models.user import Response 
 
+import json
 
 #funcion para crear un reporte
 async def insert_report(
@@ -76,6 +77,23 @@ async def get_report_base(identifier: Union[int, str]) -> Optional[Reporte]:
         print(f"Se ha producido un error al realizar la búsqueda: {error}")
         return None
     
+
+async def get_report_base_user_id(id: int):
+    try:  
+        async with async_session() as session:
+            async with session.begin():
+
+                stm = select(Reporte).where(Reporte.usuario_id_usuario == id)
+                
+                result = await session.execute(stm)
+                reportes = tuple(usuario for usuario in result.scalars())
+
+                return  reportes
+
+    except Exception as error:
+        # Manejo de la excepción
+        print(f"Se ha producido un error al realizar la búsqueda: {error}")
+        return None
 
 #funcion para Eliminar un reporte 
 
