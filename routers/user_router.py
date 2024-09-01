@@ -6,7 +6,7 @@ from sqlalchemy.orm import sessionmaker
 from typing import Annotated, Dict
 from Database.models.DataBaseModel import Usuario, engine
 from Database.models.PasswordHash import verificar_token
-from Database.queries.userFuntions import insert_usuario,all_usuarios,Login_Verificacion
+from Database.queries.userFuntions import  edit_user_DB, insert_usuario,all_usuarios,Login_Verificacion
 from routers.base_models.all_base_model import UserTokenModelResp
 
 
@@ -22,7 +22,7 @@ from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jwt.exceptions import InvalidTokenError
 from passlib.context import CryptContext
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 router = APIRouter()
@@ -92,11 +92,34 @@ async def get_current_active_user(
 ):
     return current_user
 
-@router.get("/users/me/", response_model=UserTokenModelResp)
+@router.get("/users/me/", response_model=UserTokenModelResp,tags=["users"])
 async def read_users_me(
     current_user: Annotated[UserTokenModelResp, Depends(get_current_active_user)],
 ):
     return current_user
+
+
+class Usuario_Edit(BaseModel):
+    
+    nombre: str 
+    imagenurl: str 
+
+
+@router.post("/usuario/edit", tags=["users"])
+async def edit_user_route(
+    data: Usuario_Edit,
+    current_user: Annotated[UserTokenModelResp, Depends(get_current_active_user)]
+    ):
+    
+    response = await edit_user_DB(
+        id=current_user.id,
+        nombre= data.nombre,
+        imagen_url= data.imagenurl
+    )
+
+    return response
+
+
 
 @router.post("/users/login",tags=["users"])
 async def login_user_route(user_data:UserLogin):

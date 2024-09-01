@@ -3,7 +3,7 @@ from typing import Dict, Optional, Union
 from fastapi import Body
 from pydantic import BaseModel
 from Database.models.DataBaseModel import async_session, Usuario
-from sqlalchemy import func, select
+from sqlalchemy import func, select , update
 from Database.models.PasswordHash import nuevo_token,crear_hash,verificar_hash
 from routers.base_models.user import Response, User 
 
@@ -105,6 +105,33 @@ async def all_usuarios():
         pass
 
 
+async def edit_user_DB(id: int, nombre: str, imagen_url: str):
+    try:
+        async with async_session() as session:
+            async with session.begin():
+                stm = select(Usuario).where(Usuario.idUsuario == id)
+                
+                result = await session.execute(stm)
+                user_obj = result.scalar()  # Utilizamos result.scalar() para obtener un único resultado
+                
+                if user_obj:
+                    stmt = (
+                        update(Usuario)
+                        .where(Usuario.idUsuario == id)
+                        .values(nombre=nombre, imagen=imagen_url)
+                    )
+                    await session.execute(stmt)
+                    await session.commit()  # Asegúrate de confirmar los cambios
+                    return "success"
+                else:
+                    return "id no encontrado"
+                
+    except Exception as error:
+        # Manejo de la excepción
+        print(f"Se ha producido un error al realizar la búsqueda: {error}")
+        return f"Se ha producido un error al realizar la búsqueda: {error}"
+
+
 async def get_user_base(identifier: Union[int, str]) -> Optional[Usuario]:
     try:  
         async with async_session() as session:
@@ -162,6 +189,8 @@ async def Login_Verificacion(correo:str,password:str ) -> Response:
     except Exception as error:
         # Manejo de la excepción
         return Response(status=False, message=str(error))
+
+
 
         
 async def Login_Verificacion(correo:str,password:str ) -> Response:
