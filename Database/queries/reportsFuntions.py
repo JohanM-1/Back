@@ -5,7 +5,9 @@ from sqlalchemy import delete, select, update
 from Database.models.PasswordHash import crear_hash
 from routers.base_models.all_base_model import ReporteModel
 from routers.base_models.user import Response 
-
+from sqlalchemy import select
+from sqlalchemy.orm import lazyload
+from sqlalchemy.orm import joinedload
 import json
 
 #funcion para crear un reporte
@@ -162,7 +164,7 @@ async def all_reportes():
         async with async_session() as session:
             async with session.begin():
                 # Fetch all user data using select()
-                query = select(Reporte)
+                query = select(Reporte).options(joinedload(Reporte.usuario))
                 result = await session.execute(query)
                 reporte = tuple(reporte for reporte in result.scalars())  # Extract Georeferencia objects
                 return reporte  
