@@ -211,7 +211,11 @@ async def Login_Verificacion(correo:str,password:str ) -> Response:
                         user_date = User (
                             nombres= user_now.nombre,
                             correo=user_now.correo,
-                            fecha_n=user_now.fecha_n
+                            fecha_n=user_now.fecha_n,
+                            imagen=user_now.imagen,
+                            direccion= user_now.direccion,
+                            apellido = user_now.apellido,
+                            edad = user_now.edad,
                         )
                         
                         token = await nuevo_token(user_now.nombre,user_now.idUsuario,user_now.rol)
