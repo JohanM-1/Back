@@ -100,22 +100,25 @@ async def get_report_base_user_id(id: int):
 
 #funcion para Eliminar un reporte 
 
-async def delete_report(id:int):
+async def delete_report(id:int,current_user : int):
     report = get_report_base(id)
     if(report != None):
         try:  
             async with async_session() as session:
                 async with session.begin():
-                    stm = delete(Reporte).where(Reporte.idReporte == id)
+                    stm = delete(Reporte).where(Reporte.idReporte == id, Reporte.usuario_id_usuario == current_user)
 
-                    await session.execute(stm)
+                    result = await session.execute(stm)
                     await session.commit()
-                    return(f"Se ha eliminado el reporte con el id: {id}")
+
+                    if result.rowcount > 0:
+                        return f"Se ha eliminado el reporte con el id: {id}"
+                    else:
+                        return f"No se encontró ningún reporte con el id: {id} o no tienes permiso para eliminarlo."
                     
         except Exception as error:
             # Manejo de la excepción
             return (f"Se ha producido un error al realizar la búsqueda: {error}")
-        pass
 
     else:
         return {"message": "No existe ese un reporte con ese id"}

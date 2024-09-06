@@ -69,8 +69,8 @@ async def update_report_id(id:int,report_part:report_part):
         return response
 
 @router.delete("/Reporte/Eliminar", tags=["Reporte"])
-async def delete_report_id(id:int):
+async def delete_report_id(id:int,current_user: Annotated[UserTokenModelResp, Depends(get_current_active_user)]):
     id_verif = await get_report_id(id)
     if (id_verif!=None):
-        reponse = await delete_report(id)
+        reponse = await delete_report(id,current_user.id)
         return reponse
