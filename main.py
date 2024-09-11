@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from routers import user_router,snake_router,georefence_router,report_router  # Import the router object
+from routers import user_router,snake_router,georefence_router,report_router,aiGenerate  # Import the router object
 
 from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
@@ -17,3 +17,4 @@ app.include_router(user_router.router)
 app.include_router(snake_router.router)
 app.include_router(georefence_router.router)
 app.include_router(report_router.router)
+app.include_router(aiGenerate.router)
