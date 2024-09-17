@@ -45,12 +45,12 @@ async def create_upload_file(image: UploadFile):
     print(f"{myfile=}")
     model = genai.GenerativeModel("gemini-1.5-flash")
     result = model.generate_content(
-        [myfile, "\n\n", "Identify the species of snake in this image and porcent the acert. Is it venomous? Please provide the answer in Spanish."]
+        [myfile, "Identify the species of snake in this image and porcent the acert. Is it venomous? Please provide the answer in Spanish."]
     )
     textResult = result.text
     print(textResult)
 
-    return (textResult)
+    return f(textResult)
 
 
 
