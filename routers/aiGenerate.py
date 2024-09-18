@@ -47,7 +47,8 @@ async def create_upload_file(image: UploadFile):
     result = model.generate_content(
         [myfile, "Identify the species of snake in this image and porcent the acert. Is it venomous? Please provide the answer in Spanish."]
     )
-    textResult = result.text.strip()
+    
+    textResult = result.text.replace("\n", "")
     print(textResult)
     if(textResult):
 
