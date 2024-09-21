@@ -1,7 +1,6 @@
 import google.generativeai as genai
 import os
 from fastapi import  APIRouter, HTTPException, UploadFile
-import os
 import uuid
 from pathlib import Path
 

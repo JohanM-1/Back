@@ -1,15 +1,28 @@
 from __future__ import annotations
 import asyncio
 import datetime
+import os
 from typing import List, Optional
 
 from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, func , Time ,Date
 from sqlalchemy.ext.asyncio import AsyncSession,create_async_engine,async_sessionmaker,AsyncAttrs
 from sqlalchemy.orm import declarative_base, relationship, mapped_column, Mapped,DeclarativeBase
 
-
 from sqlalchemy.ext.declarative import declared_attr
-engine = create_async_engine('sqlite+aiosqlite:///your_database.db', echo=True)
+
+
+# Obtener valores de las variables de entorno
+API_KEY = os.environ.get("API_KEY")  # Valor por defecto de settings
+DB_HOST = os.environ.get("DB_HOST")
+DB_PORT = os.environ.get("DB_PORT")  # Puerto predeterminado de Postgres
+DB_USER = os.environ.get("DB_USER")
+DB_PASSWORD = os.environ.get("DB_PASSWORD")
+DB_NAME = os.environ.get("DB_NAME")
+
+
+engine = create_async_engine(
+    f"postgresql+asyncpg://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}",echo = True
+)
 async_session = async_sessionmaker(engine, expire_on_commit=False)
 
 class Base(AsyncAttrs, DeclarativeBase):
@@ -107,6 +120,5 @@ async def async_main() -> None:
 
     await engine.dispose()
 
-asyncio.run(async_main())
 
 
