@@ -7,8 +7,9 @@ from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, f
 from sqlalchemy.ext.asyncio import AsyncSession,create_async_engine,async_sessionmaker,AsyncAttrs
 from sqlalchemy.orm import declarative_base, relationship, mapped_column, Mapped,DeclarativeBase
 
+
 from sqlalchemy.ext.declarative import declared_attr
-engine = create_async_engine("postgresql+asyncpg://snake_meta_db_local2_user:aXFm7kUKWCuvv1Ir6pamtOr4aRmBekga@dpg-cr1m5hbqf0us73fphrgg-a.oregon-postgres.render.com/snake_meta_db_local2", echo=True)
+engine = create_async_engine('sqlite+aiosqlite:///your_database.db', echo=True)
 async_session = async_sessionmaker(engine, expire_on_commit=False)
 
 class Base(AsyncAttrs, DeclarativeBase):
@@ -106,6 +107,6 @@ async def async_main() -> None:
 
     await engine.dispose()
 
-
+asyncio.run(async_main())
 
 
