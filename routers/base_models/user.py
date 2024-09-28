@@ -13,6 +13,9 @@ class User(BaseModel):
     rol: str | None = None
     edad: int | None = None
     imagen: str | None = None
+    Descripcion: str | None = None
+    imagen_fonodo: str | None = None
+    
     
 class UserLogin(BaseModel):
     email: EmailStr
