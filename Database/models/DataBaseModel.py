@@ -50,6 +50,8 @@ class Usuario(Base):
     fecha_n: Mapped[str] = mapped_column(String(45))
     rol: Mapped[str] = mapped_column(String(45))
     edad: Mapped[int] = mapped_column(Integer)
+    Descripcion: Mapped[str] = mapped_column(String(300),nullable=True)
+    imagen_fonodo: Mapped[str] = mapped_column(String(300),nullable=True)
         
     def __repr__(self):
         return f"Usuario(id={self.idUsuario}, nombre='{self.nombre} {self.apellido}', correo='{self.correo}')"

@@ -105,7 +105,7 @@ async def all_usuarios():
         pass
 
 
-async def edit_user_DB(id: int, nombre: str, imagen_url: str):
+async def edit_user_DB(id: int, nombre: str, imagen_url: str, Descripcion : str, imagen_fonodo :str):
     try:
         async with async_session() as session:
             async with session.begin():
@@ -118,7 +118,7 @@ async def edit_user_DB(id: int, nombre: str, imagen_url: str):
                     stmt = (
                         update(Usuario)
                         .where(Usuario.idUsuario == id)
-                        .values(nombre=nombre, imagen=imagen_url)
+                        .values(nombre=nombre, imagen=imagen_url , Descripcion=Descripcion, imagen_fonodo=imagen_fonodo)
                     )
                     await session.execute(stmt)
                     await session.commit()  # Asegúrate de confirmar los cambios

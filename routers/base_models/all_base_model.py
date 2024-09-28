@@ -16,7 +16,7 @@ class Usuario(BaseModel):
     fecha_n: str = Field(..., max_length=45, description="User's birth date")
     rol: str = Field(..., max_length=45, description="User's role (e.g., admin, user)")
     edad: int = Field(..., description="User's age")
-
+    
 class Comentario(BaseModel):
     
     contenido: str = Field(..., max_length=1000, description="Coment Content")

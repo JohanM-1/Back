@@ -103,6 +103,8 @@ class Usuario_Edit(BaseModel):
     
     nombre: str 
     imagenurl: str 
+    imagen_fonodo: str
+    Descripcion: str
 
 
 @router.post("/usuario/edit", tags=["users"])
@@ -114,7 +116,10 @@ async def edit_user_route(
     response = await edit_user_DB(
         id=current_user.id,
         nombre= data.nombre,
-        imagen_url= data.imagenurl
+        imagen_url= data.imagenurl,
+        imagen_fonodo= data.imagen_fonodo,
+        Descripcion=data.Descripcion,
+
     )
 
     return response
