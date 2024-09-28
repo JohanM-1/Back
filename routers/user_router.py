@@ -103,8 +103,8 @@ class Usuario_Edit(BaseModel):
     
     nombre: str 
     imagenurl: str 
-    imagen_fonodo: str
-    Descripcion: str
+    imagen_fonodo: str | None = None
+    Descripcion: str | None = None
 
 
 @router.post("/usuario/edit", tags=["users"])
