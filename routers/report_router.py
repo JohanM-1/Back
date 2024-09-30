@@ -38,14 +38,21 @@ async def get_report_id(id:int):
     
 
 
-@router.get("/Reporte/id_user", tags=["Reporte"])
-async def get_report_id_user(id:int):
-    response = await get_report_base_user_id(id)
+@router.get("/Reporte/all_me", tags=["Reporte"])
+async def get_report_id_user(current_user: Annotated[UserTokenModelResp, Depends(get_current_active_user)]):
+    response = await get_report_base_user_id(current_user.id)
     if(response != None):
         return response
     else:
         raise HTTPException(status_code=404, detail=f"Id no encontrado: {id}")
     
+@router.get("/Reporte/all_id", tags=["Reporte"])
+async def get_report_id_user(id :int):
+    response = await get_report_base_user_id(id)
+    if(response != None):
+        return response
+    else:
+        raise HTTPException(status_code=404, detail=f"Id no encontrado: {id}")
 
 @router.get("/Reporte/all", tags=["Reporte"])
 async def all_reports():
