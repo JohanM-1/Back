@@ -12,6 +12,7 @@ app.add_middleware(
     allow_headers=["*"],  # Permitir todos los encabezados en las solicitudes
 )
 
+
 # Include the router in the app
 app.include_router(user_router.router)
 app.include_router(snake_router.router)
