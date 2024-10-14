@@ -69,6 +69,7 @@ async def create_upload_file(image: UploadFile):
         name: str
         description: str
         venomous: bool
+        issnake: bool
 
 
 
