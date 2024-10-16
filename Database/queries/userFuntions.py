@@ -231,3 +231,35 @@ async def Login_Verificacion(correo:str,password:str ) -> Response:
     except Exception as error:
         # Manejo de la excepción
         return Response(status=False, message=str(error))
+    
+async def Login_Verificacion_username(username: str, password: str) -> Response:
+
+    try:
+        async with async_session() as session:
+            async with session.begin():
+                stm = select(Usuario).where(Usuario.nombre == username)
+                result = await session.execute(stm)
+                user_now = result.scalar()
+
+                if user_now:
+                    if await verificar_hash(password, user_now.contraseña):
+                        user_data = User(
+                            nombres=user_now.nombre,
+                            correo=user_now.correo,
+                            fecha_n=user_now.fecha_n,
+                            imagen=user_now.imagen,
+                            direccion=user_now.direccion,
+                            apellido=user_now.apellido,
+                            edad=user_now.edad,
+                            Descripcion=user_now.Descripcion,
+                            imagen_fonodo=user_now.imagen_fonodo
+                        )
+                        token = await nuevo_token(user_now.nombre, user_now.idUsuario, user_now.rol)
+                        return Response(status=True, message="Inicio de sesión exitoso", access_token=token, data=user_data)
+                    else:
+                        return Response(status=False, message="Contraseña incorrecta")
+                else:
+                    return Response(status=False, message="Nombre de usuario incorrecto")
+
+    except Exception as error:
+        return Response(status=False, message=str(error))

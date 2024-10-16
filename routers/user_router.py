@@ -6,7 +6,7 @@ from sqlalchemy.orm import sessionmaker
 from typing import Annotated, Dict
 from Database.models.DataBaseModel import Usuario, engine
 from Database.models.PasswordHash import verificar_token
-from Database.queries.userFuntions import  edit_user_DB, insert_usuario,all_usuarios,Login_Verificacion
+from Database.queries.userFuntions import  Login_Verificacion_username, edit_user_DB, insert_usuario,all_usuarios,Login_Verificacion
 from routers.base_models.all_base_model import UserTokenModelResp
 
 
@@ -126,13 +126,17 @@ async def edit_user_route(
 
 
 
-@router.post("/users/login",tags=["users"])
-async def login_user_route(user_data:UserLogin):
-    Response = await Login_Verificacion(user_data.email,user_data.password)
-    if(Response.status):
+@router.post("/users/login", tags=["users"])
+async def login_user_route(user_data: UserLogin):
+    if "@" in user_data.identifier:
+        # Verificación por correo electrónico
+        Response = await Login_Verificacion(user_data.identifier, user_data.password)
+    else:
+        # Verificación por nombre de usuario
+        Response = await Login_Verificacion_username(user_data.identifier, user_data.password)
+
+    if Response.status:
         return Response
     else:
         raise HTTPException(status_code=401, detail=Response.message)
-    pass
-
-
+    
