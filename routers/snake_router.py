@@ -1,6 +1,6 @@
 from __future__ import annotations
 from fastapi import APIRouter, UploadFile, HTTPException
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel, Field
 from Database.queries.snakeFuntions import (
     all_Snakes_poison,
@@ -42,6 +42,11 @@ async def create_upload_file(image: UploadFile):
 @router.get("/view_image/")
 async def view_image(imagen: str):
     return FileResponse(os.path.join(images_dir, imagen))
+
+@router.get("/get_all_images/")
+async def get_all_images():
+    images = os.listdir(images_dir)
+    return JSONResponse(content={"images": images})
 
 @router.get("/snake/id", tags=["Snake"])
 async def get_snake_id(id: int):
