@@ -1,8 +1,5 @@
 from pydantic import BaseModel, EmailStr, constr
 
-from routers.base_models.all_base_model import Usuario
-
-
 class User(BaseModel):
     nombres: str | None = None
     correo: EmailStr | None = None
@@ -14,13 +11,12 @@ class User(BaseModel):
     edad: int | None = None
     imagen: str | None = None
     Descripcion: str | None = None
-    imagen_fonodo: str | None = None
-    
-    
+    imagen_fondo: str | None = None  
+
 class UserLogin(BaseModel):
-    identifier: str
+    identifier: str 
     password: str
-    
+
 class Response(BaseModel):
     status: bool
     message: str
@@ -28,12 +24,10 @@ class Response(BaseModel):
     access_token: str | None = None
 
 class Snake(BaseModel):
-  nombre3: str   # Common name of the snake (required)
-  nombreCientifico: str   # Scientific name (required)
-  reino: str   # Kingdom (required)
-  especie: str   # Species (required)
-  clase: str   # Class (required)
-  genero: str  # Genus (required)
-  familia: str  # Family (required)
-
-
+    nombre3: str  
+    nombreCientifico: str 
+    reino: str  
+    especie: str  
+    clase: str  
+    genero: str  
+    familia: str  

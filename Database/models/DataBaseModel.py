@@ -56,9 +56,6 @@ class Usuario(Base):
     def __repr__(self):
         return f"Usuario(id={self.idUsuario}, nombre='{self.nombre} {self.apellido}', correo='{self.correo}')"
 
-
-
-
 class Serpiente(Base):
     __tablename__ = 'serpientes'
     idSerpiente: Mapped[int] = mapped_column(Integer, primary_key=True)
@@ -85,10 +82,6 @@ class Georeferencia(Base):
     serpiente: Mapped[Serpiente] = relationship('Serpiente')
     usuario: Mapped[Usuario] = relationship('Usuario')
 
-
-
-
-
 class Reporte(TimestampMixin,Base):
     __tablename__ = 'reporte'
     idReporte: Mapped[int] = mapped_column(Integer, primary_key=True)
@@ -100,7 +93,6 @@ class Reporte(TimestampMixin,Base):
     
     serpiente: Mapped[Serpiente] = relationship('Serpiente')
     usuario: Mapped[Usuario] = relationship('Usuario')
-
 
 class Comentario(TimestampMixin,Base):
     __tablename__ = 'comentario'
@@ -114,13 +106,8 @@ class Comentario(TimestampMixin,Base):
     def __repr__(self):
         return {'fecha de creacion':self.created_at,'contenido':self.contenido}
     
-
-# Creacion de tablas en la base de datos
 async def async_main() -> None:
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
     await engine.dispose()
-
-
-
