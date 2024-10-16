@@ -13,7 +13,7 @@ from .base_models.all_base_model import Serpiente
 from pathlib import Path
 import os
 import uuid
-from typing import Annotated
+from typing import List
 
 router = APIRouter()
 
@@ -38,15 +38,30 @@ async def create_upload_file(image: UploadFile):
     image_url = f"{filename}"
     return {"image_url": image_url}
 
-# Ruta para ver la imagen
 @router.get("/view_image/")
 async def view_image(imagen: str):
-    return FileResponse(os.path.join(images_dir, imagen))
+    image_path = os.path.join(images_dir, imagen)
+    if not os.path.exists(image_path):
+        raise HTTPException(status_code=404, detail="Image not found")
+    
+    return FileResponse(image_path)
 
 @router.get("/get_all_images/")
 async def get_all_images():
+    if not os.path.exists(images_dir):
+        raise HTTPException(status_code=404, detail="Images directory not found")
+
     images = os.listdir(images_dir)
-    return JSONResponse(content={"images": images})
+    if not images:
+        return JSONResponse(content={"images": []}) 
+
+    images_list = [
+        {"name": img, "url": f"/view_image?imagen={img}"}
+        for img in images
+        if img.split('.')[-1].lower() in ALLOWED_IMAGE_EXTENSIONS
+    ]
+
+    return JSONResponse(content={"images": images_list})
 
 @router.get("/snake/id", tags=["Snake"])
 async def get_snake_id(id: int):
