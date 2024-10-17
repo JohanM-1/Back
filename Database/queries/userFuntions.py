@@ -244,19 +244,20 @@ async def Login_Verificacion_username(username: str, password: str) -> Response:
 
                 if user_now:
                     if await verificar_hash(password, user_now.contraseña):
-                        user_data = User(
-                            nombres=user_now.nombre,
+                        user_date = User (
+                            nombres= user_now.nombre,
                             correo=user_now.correo,
                             fecha_n=user_now.fecha_n,
                             imagen=user_now.imagen,
-                            direccion=user_now.direccion,
-                            apellido=user_now.apellido,
-                            edad=user_now.edad,
-                            Descripcion=user_now.Descripcion,
-                            imagen_fonodo=user_now.imagen_fonodo
+                            direccion= user_now.direccion,
+                            apellido = user_now.apellido,
+                            edad = user_now.edad,
+                            Descripcion = user_now.Descripcion,
+                            imagen_fonodo = user_now.imagen_fonodo,
+                            id = user_now.idUsuario,
                         )
                         token = await nuevo_token(user_now.nombre, user_now.idUsuario, user_now.rol)
-                        return Response(status=True, message="Inicio de sesión exitoso", access_token=token, data=user_data)
+                        return Response(status=True, message="Inicio de sesión exitoso", access_token=token, data=user_date)
                     else:
                         return Response(status=False, message="Contraseña incorrecta")
                 else:
