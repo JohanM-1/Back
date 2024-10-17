@@ -86,11 +86,15 @@ async def get_report_base_user_id(id: int):
         async with async_session() as session:
             async with session.begin():
 
-                stm = select(Reporte).where(Reporte.usuario_id_usuario == id)
+                stm = select(Reporte).where(Reporte.usuario_id_usuario == id).options(
+                        selectinload(Reporte.usuario).options(
+                            load_only(Usuario.imagen, Usuario.nombre)
+                        )
+                    )
                 
                 result = await session.execute(stm)
                 reportes = tuple(usuario for usuario in result.scalars())
-
+                
                 return  reportes
 
     except Exception as error:
