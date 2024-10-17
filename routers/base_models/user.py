@@ -12,6 +12,7 @@ class User(BaseModel):
     imagen: str | None = None
     Descripcion: str | None = None
     imagen_fondo: str | None = None  
+    id: int |None =None
 
 class UserLogin(BaseModel):
     identifier: str 

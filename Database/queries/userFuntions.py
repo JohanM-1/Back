@@ -217,7 +217,8 @@ async def Login_Verificacion(correo:str,password:str ) -> Response:
                             apellido = user_now.apellido,
                             edad = user_now.edad,
                             Descripcion = user_now.Descripcion,
-                            imagen_fonodo = user_now.imagen_fonodo
+                            imagen_fonodo = user_now.imagen_fonodo,
+                            id = user_now.idUsuario,
                         )
                         
                         token = await nuevo_token(user_now.nombre,user_now.idUsuario,user_now.rol)
