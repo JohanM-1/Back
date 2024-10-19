@@ -53,7 +53,7 @@ async def create_user(user_data:User):
     return response
 
 
-@router.get("/users/google-auth", tags=["users"])
+@router.post("/users/google-auth", tags=["users"])
 async def get_user_id(id:str):
     try:
         user = auth.get_user(id)
