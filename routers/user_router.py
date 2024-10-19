@@ -2,11 +2,13 @@ from __future__ import annotations
 import json
 from fastapi import APIRouter, Depends, HTTPException,status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+import firebase_admin
+from httplib2 import Credentials
 from sqlalchemy.orm import sessionmaker
 from typing import Annotated, Dict
 from Database.models.DataBaseModel import Usuario, engine
 from Database.models.PasswordHash import verificar_token
-from Database.queries.userFuntions import  Login_Verificacion_username, edit_user_DB, insert_usuario,all_usuarios,Login_Verificacion
+from Database.queries.userFuntions import  Login_Verificacion_username, check_user_email, edit_user_DB, insert_usuario,all_usuarios,Login_Verificacion
 from routers.base_models.all_base_model import UserTokenModelResp
 
 
@@ -23,8 +25,10 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jwt.exceptions import InvalidTokenError
 from passlib.context import CryptContext
 from pydantic import BaseModel, Field
+from firebase_admin import auth,credentials
 
-
+cred = credentials.Certificate('./meta-snake-firebase-adminsdk-bu6li-0923f24189.json')
+default_app = firebase_admin.initialize_app(cred)
 router = APIRouter()
 
 
@@ -49,8 +53,50 @@ async def create_user(user_data:User):
     return response
 
 
+@router.get("/users/google-auth", tags=["users"])
+async def get_user_id(id:str):
+    try:
+        user = auth.get_user(id)
+        print(user.email)
+        print(user.photo_url)
+        bool = await check_user_email(user.email)
+        if( bool == False):
+            await insert_usuario(            
+            nombres=user.display_name,
+            correo=user.email,
+            direccion= "",
+            contraseña= id,
+            apellido="",
+            fecha_n= "null",
+            rol= "usuario",
+            edad= 0,
+            imagen= user.photo_url,
+            )
+
+            response = await Login_Verificacion(user.email, id)
+            return response
+        else:
+            response = await Login_Verificacion(user.email, id)
+            return response
+        
+    except Exception as e:
+        print(e)
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password"
+        )
+
+
+
+
 @router.get("/users/all", tags=["users"])
 async def get_all_users():
+    print(default_app.name)
+    try:
+        user = auth.get_user("yjFmIs1SPCWLcwMm4PEWBsXTu8U2")
+        print(user.display_name)
+    except:
+        print("error")
     response = await all_usuarios()
     return response
 

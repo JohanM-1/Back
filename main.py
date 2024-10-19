@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+import firebase_admin
 from routers import user_router,snake_router,georefence_router,report_router,aiGenerate  # Import the router object
 
 from fastapi.middleware.cors import CORSMiddleware

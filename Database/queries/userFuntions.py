@@ -132,6 +132,26 @@ async def edit_user_DB(id: int, nombre: str, imagen_url: str, Descripcion : str,
         return f"Se ha producido un error al realizar la búsqueda: {error}"
 
 
+async def check_user_email(identifier: str) -> bool:
+    try:  
+        async with async_session() as session:
+            async with session.begin():
+
+                stm = select(Usuario).where(Usuario.correo == identifier)
+
+                result = await session.execute(stm)
+                user_obj = result.scalar()  # Utilizamos result.scalar() para obtener un único resultado
+                
+                if(user_obj):
+                    return  True
+                else:
+                    return False
+                
+    except Exception as error:
+        # Manejo de la excepción
+        print(f"Se ha producido un error al realizar la búsqueda: {error}")
+        return None
+
 async def get_user_base(identifier: Union[int, str]) -> Optional[Usuario]:
     try:  
         async with async_session() as session:
