@@ -88,7 +88,7 @@ async def get_report_base_user_id(id: int):
 
                 stm = select(Reporte).where(Reporte.usuario_id_usuario == id).options(
                         selectinload(Reporte.usuario).options(
-                            load_only(Usuario.imagen, Usuario.nombre)
+                            load_only(Usuario.imagen, Usuario.nombre, Usuario.Descripcion , Usuario.imagen_fonodo)
                         )
                     )
                 
@@ -176,7 +176,7 @@ async def all_reportes():
                     select(Reporte)
                     .options(
                         selectinload(Reporte.usuario).options(
-                            load_only(Usuario.imagen, Usuario.nombre)
+                            load_only(Usuario.imagen, Usuario.nombre, Usuario.Descripcion , Usuario.imagen_fonodo)
                         )
                     )
                 )
