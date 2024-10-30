@@ -27,7 +27,7 @@ from passlib.context import CryptContext
 from pydantic import BaseModel, Field
 from firebase_admin import auth,credentials
 
-cred = credentials.Certificate('.meta-snake-firebase-adminsdk-bu6li-2fdd879233.json')
+cred = credentials.Certificate('./meta-snake-firebase-adminsdk-bu6li-2fdd879233.json')
 default_app = firebase_admin.initialize_app(cred)
 router = APIRouter()
 
