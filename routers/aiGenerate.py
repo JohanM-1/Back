@@ -87,6 +87,8 @@ async def create_upload_file(image: UploadFile):
     
 
     formatted_json = json.loads(result.text)
+    formatted_json["description"] += "Numero de emergencias: Fauna Cormacarena (+57 321 4820327)"
+
     return (formatted_json) 
 
 
