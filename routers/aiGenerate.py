@@ -74,7 +74,7 @@ async def create_upload_file(image: UploadFile):
 
 
     result = model.generate_content(
-        ["The request is about identifying snakes in Colombia, with an emphasis on species found in the Meta department. I need the identified snake to be described with the following information in English: common name, scientific name, a brief description of the snake, whether it is venomous or not, recommendations on what to do if I encounter the snake, and instructions on what to do in case of a bite. The response should be entirely in Spanish.", myfile],
+        ["identifica la serpiente de la imagen, si es venenosa o no y en la descripcion agregar que hacer en caso de una mordedura de esta serpiente como en un paso a pose, la respuesta debe ser en español", myfile],
         generation_config=genai.GenerationConfig(
             response_mime_type="application/json", response_schema=Recipe
         ),
