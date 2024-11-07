@@ -73,7 +73,7 @@ async def create_upload_file(image: UploadFile):
 
 
     result = model.generate_content(
-        ["Analyze the image of a snake by carefully observing its physical characteristics, such as color, pattern, size, head shape, and any other visible details (e.g., eyes, fangs, or scales). Also, take into account the environment or habitat, if visible. Based on this information, identify the possible species of the snake and propose a scientific name that matches the observed characteristics. The response should be in Spanish.", myfile],
+        ["The request is about identifying snakes in Colombia, with an emphasis on species found in the Meta department. I need the identified snake to be described with the following information in English: common name, scientific name, a brief description of the snake, whether it is venomous or not, recommendations on what to do if I encounter the snake, and instructions on what to do in case of a bite. The response should be entirely in Spanish.", myfile],
         generation_config=genai.GenerationConfig(
             response_mime_type="application/json", response_schema=Recipe
         ),
