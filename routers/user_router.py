@@ -8,7 +8,7 @@ from sqlalchemy.orm import sessionmaker
 from typing import Annotated, Dict
 from Database.models.DataBaseModel import Usuario, engine
 from Database.models.PasswordHash import verificar_token
-from Database.queries.userFuntions import  Login_Verificacion_username, check_user_email, edit_user_DB, insert_usuario,all_usuarios,Login_Verificacion
+from Database.queries.userFuntions import  Login_Verificacion_username, check_user_email, edit_user_DB, edit_user_DB_pass, insert_usuario,all_usuarios,Login_Verificacion
 from routers.base_models.all_base_model import UserTokenModelResp
 
 
@@ -165,6 +165,31 @@ async def edit_user_route(
         imagen_url= data.imagenurl,
         imagen_fonodo= data.imagen_fonodo,
         Descripcion=data.Descripcion,
+
+    )
+
+    return response
+
+
+
+class UsuarioEditPass(BaseModel):
+    
+    nombre: str | None = None
+    password: str | None = None
+    email: str | None = None
+
+
+@router.post("/usuario/editpass", tags=["users"])
+async def edit_user_route_pass(
+    data: UsuarioEditPass,
+    current_user: Annotated[UserTokenModelResp, Depends(get_current_active_user)]
+    ):
+    
+    response = await edit_user_DB_pass(
+        id=current_user.id,
+        nombre= data.nombre,
+        email=data.email,
+        password=data.password,
 
     )
 

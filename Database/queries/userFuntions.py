@@ -105,6 +105,59 @@ async def all_usuarios():
         pass
 
 
+async def edit_user_DB_pass(id: int, nombre: str, email: str, password : str):
+    try:
+        async with async_session() as session:
+            async with session.begin():
+                stm = select(Usuario).where(Usuario.idUsuario == id)
+                
+                result = await session.execute(stm)
+                user_obj = result.scalar()  # Utilizamos result.scalar() para obtener un único resultado
+                
+                if user_obj:
+                    contraseña_hash = await crear_hash(password)
+                    stmt = (
+                        update(Usuario)
+                        .where(Usuario.idUsuario == id)
+                        .values(nombre=nombre, correo=email , contraseña=contraseña_hash)
+                    )
+                    await session.execute(stmt)
+                    await session.commit()  # Asegúrate de confirmar los cambios
+                    return "success"
+                else:
+                    return "id no encontrado"
+                
+    except Exception as error:
+        # Manejo de la excepción
+        print(f"Se ha producido un error al realizar la búsqueda: {error}")
+        return f"Se ha producido un error al realizar la búsqueda: {error}"
+    
+
+    try:
+        async with async_session() as session:
+            async with session.begin():
+                stm = select(Usuario).where(Usuario.idUsuario == id)
+                
+                result = await session.execute(stm)
+                user_obj = result.scalar()  # Utilizamos result.scalar() para obtener un único resultado
+                
+                if user_obj:
+                    stmt = (
+                        update(Usuario)
+                        .where(Usuario.idUsuario == id)
+                        .values(nombre=nombre, imagen=imagen_url , Descripcion=Descripcion, imagen_fonodo=imagen_fonodo)
+                    )
+                    await session.execute(stmt)
+                    await session.commit()  # Asegúrate de confirmar los cambios
+                    return "success"
+                else:
+                    return "id no encontrado"
+                
+    except Exception as error:
+        # Manejo de la excepción
+        print(f"Se ha producido un error al realizar la búsqueda: {error}")
+        return f"Se ha producido un error al realizar la búsqueda: {error}"
+    
 async def edit_user_DB(id: int, nombre: str, imagen_url: str, Descripcion : str, imagen_fonodo :str):
     try:
         async with async_session() as session:
@@ -130,6 +183,7 @@ async def edit_user_DB(id: int, nombre: str, imagen_url: str, Descripcion : str,
         # Manejo de la excepción
         print(f"Se ha producido un error al realizar la búsqueda: {error}")
         return f"Se ha producido un error al realizar la búsqueda: {error}"
+
 
 
 async def check_user_email(identifier: str) -> bool:
