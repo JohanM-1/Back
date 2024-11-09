@@ -265,7 +265,7 @@ async def Login_Verificacion(correo:str,password:str ) -> Response:
                             direccion= user_now.direccion,
                             apellido = user_now.apellido,
                             edad = user_now.edad,
-                            Descripcion = user_now.Descripcion,
+                            Descripcion = user_now.Descripcion.encode("latin1"),
                             imagen_fondo = user_now.imagen_fonodo,
                             id = user_now.idUsuario,
                         )
