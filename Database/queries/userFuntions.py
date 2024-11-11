@@ -115,11 +115,20 @@ async def edit_user_DB_pass(id: int, nombre: str, email: str, password : str):
                 user_obj = result.scalar()  # Utilizamos result.scalar() para obtener un único resultado
                 
                 if user_obj:
-                    contraseña_hash = await crear_hash(password)
+
+                    if(password is not None):
+                         contraseña_hash = await crear_hash(password)
+                    contraseña_hash = None
+
+
                     stmt = (
                         update(Usuario)
                         .where(Usuario.idUsuario == id)
-                        .values(nombre=nombre, correo=email , contraseña=contraseña_hash)
+                        .values(
+                                nombre=nombre if nombre is not None else Usuario.nombre,
+                                correo=email if email is not None else Usuario.correo,
+                                contraseña=contraseña_hash if contraseña_hash is not None else Usuario.contraseña
+                        )
                     )
                     await session.execute(stmt)
                     await session.commit()  # Asegúrate de confirmar los cambios
