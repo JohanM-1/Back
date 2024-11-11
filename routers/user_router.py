@@ -196,6 +196,23 @@ async def edit_user_route_pass(
     return response
 
 
+@router.post("/usuario/editpassAdmin", tags=["users"])
+async def edit_user_route_pass(
+    data: UsuarioEditPass,
+    id:int
+    ):
+    
+    response = await edit_user_DB_pass(
+        id=id,
+        nombre= data.nombre,
+        email=data.email,
+        password=data.password,
+
+    )
+
+    return response
+
+
 
 @router.post("/users/login", tags=["users"])
 async def login_user_route(user_data: UserLogin):
