@@ -62,7 +62,7 @@ async def create_upload_file(image: UploadFile):
 
     myfile = genai.upload_file("images/"+image_url)
     print(f"{myfile=}")
-
+    
     model = genai.GenerativeModel("gemini-1.5-flash")
 
     class Recipe(typing.TypedDict):
