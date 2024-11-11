@@ -265,10 +265,13 @@ async def Login_Verificacion(correo:str,password:str ) -> Response:
                             direccion= user_now.direccion,
                             apellido = user_now.apellido,
                             edad = user_now.edad,
-                            Descripcion = user_now.Descripcion.encode("latin1"),
+                            Descripcion = user_now.Descripcion,
                             imagen_fondo = user_now.imagen_fonodo,
                             id = user_now.idUsuario,
                         )
+                        if(user_date.Descripcion != None):
+                            user_date.Descripcion = user_date.Descripcion
+                            
                         
                         token = await nuevo_token(user_now.nombre,user_now.idUsuario,user_now.rol)
                         return Response(status=True,message="Inicio de sesión exitoso",access_token=token,data=user_date)
