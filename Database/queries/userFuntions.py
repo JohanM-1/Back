@@ -294,6 +294,45 @@ async def Login_Verificacion(correo:str,password:str ) -> Response:
         # Manejo de la excepción
         return Response(status=False, message=str(error))
     
+    
+    
+async def login_auth_provider(correo:str) -> Response:
+
+    try:  
+        async with async_session() as session:
+            async with session.begin():
+            
+                stm = select(Usuario).where(Usuario.correo == correo)
+                result = await session.execute(stm)
+                user_now = result.scalar()  
+
+                if user_now:
+
+                        user_date = User (
+                            nombres= user_now.nombre,
+                            correo=user_now.correo,
+                            fecha_n=user_now.fecha_n,
+                            imagen=user_now.imagen,
+                            direccion= user_now.direccion,
+                            apellido = user_now.apellido,
+                            edad = user_now.edad,
+                            Descripcion = user_now.Descripcion,
+                            imagen_fondo = user_now.imagen_fonodo,
+                            id = user_now.idUsuario,
+                        )
+                        if(user_date.Descripcion != None):
+                            user_date.Descripcion = user_date.Descripcion
+                            
+                        
+                        token = await nuevo_token(user_now.nombre,user_now.idUsuario,user_now.rol)
+                        return Response(status=True,message="Inicio de sesión exitoso",access_token=token,data=user_date)
+                else:
+                    return Response(status=False,message="Correo incorrecto")
+
+    except Exception as error:
+        # Manejo de la excepción
+        return Response(status=False, message=str(error))
+    
 async def Login_Verificacion_username(username: str, password: str) -> Response:
 
     try:

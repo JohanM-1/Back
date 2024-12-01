@@ -1,14 +1,16 @@
 from __future__ import annotations
 import json
-from fastapi import APIRouter, Depends, HTTPException,status
+import re
+from fastapi import APIRouter, Depends, HTTPException, Request,status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 import firebase_admin
 from httplib2 import Credentials
+import pyrebase
 from sqlalchemy.orm import sessionmaker
 from typing import Annotated, Dict
 from Database.models.DataBaseModel import Usuario, engine
 from Database.models.PasswordHash import verificar_token
-from Database.queries.userFuntions import  Login_Verificacion_username, check_user_email, edit_user_DB, edit_user_DB_pass, insert_usuario,all_usuarios,Login_Verificacion
+from Database.queries.userFuntions import  Login_Verificacion_username, check_user_email, edit_user_DB, edit_user_DB_pass, insert_usuario,all_usuarios,Login_Verificacion, login_auth_provider
 from routers.base_models.all_base_model import UserTokenModelResp
 
 
@@ -27,10 +29,25 @@ from passlib.context import CryptContext
 from pydantic import BaseModel, Field
 from firebase_admin import auth,credentials
 
-cred = credentials.Certificate('./meta-snake-firebase-adminsdk-bu6li-2fdd879233.json')
-default_app = firebase_admin.initialize_app(cred)
+
 router = APIRouter()
 
+if not firebase_admin._apps:
+    cred = credentials.Certificate('./meta-snake-firebase-adminsdk-bu6li-2fdd879233.json')
+    firebase_admin.initialize_app(cred)
+    
+firebaseConfig = {
+  "apiKey": "AIzaSyCIigZIzS2g7rk4JtAW1niMHrfoPSOYKGg",
+  'authDomain': "meta-snake.firebaseapp.com",
+  'projectId': "meta-snake",
+  'storageBucket': "meta-snake.appspot.com",
+  'messagingSenderId': "766715754129",
+  'appId': "1:766715754129:web:30c7a5df2637d4603cf130",
+  'measurementId': "G-7KXN4PRE0L",
+  'databaseURL' : ""
+}
+
+firebase = pyrebase.initialize_app(firebaseConfig)
 
 class Token (BaseModel):
     access_token: str
@@ -52,9 +69,27 @@ async def create_user(user_data:User):
             )
     return response
 
+import secrets
+import string
+
+def generar_contraseña_segura(longitud=12):
+    """Generate password
+
+    Args:
+        longitud: int large password.
+
+    Returns:
+        str: password generate.
+    """
+
+    caracteres = string.ascii_letters + string.digits + string.punctuation
+    contraseña = ''.join(secrets.choice(caracteres) for _ in range(longitud))
+    return contraseña  
+
 
 @router.post("/users/google-auth", tags=["users"])
 async def get_user_id(id:str):
+    
     try:
         user = auth.get_user(id)
         print(user.email)
@@ -73,11 +108,71 @@ async def get_user_id(id:str):
             imagen= user.photo_url,
             )
 
-            response = await Login_Verificacion(user.email, id)
-            return response
-        else:
-            response = await Login_Verificacion(user.email, id)
-            return response
+
+        response = await Login_Verificacion(user.email, id)
+        return response
+        
+    except Exception as e:
+        print(e)
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password"
+        )
+
+
+def verify_firebase_id_token(token):
+    """
+    A helper function for verifying ID tokens issued by Firebase.
+    See https://firebase.google.com/docs/auth/admin/verify-id-tokens for
+    more information.
+
+    Parameters:
+       token (str): A token issued by Firebase.
+
+    Output:
+       auth_context (dict): Authentication context.
+    """
+    try:
+        full_auth_context = auth.verify_id_token(token,check_revoked=True,clock_skew_seconds=0)
+    except InvalidTokenError:
+        return {"error"}
+
+    auth_context = {
+        'username': full_auth_context.get('name'),
+        'uid': full_auth_context.get('uid'),
+        'email': full_auth_context.get('email')
+    }
+    return auth_context 
+
+
+@router.get("/users/google-auth-token", tags=["users"])
+async def get_user_id(request: Request):
+    try:
+        headers = request.headers
+        jwt = headers.get('authorization')
+        jwt = re.sub(r'^Bearer\s+', '', jwt)
+        user = verify_firebase_id_token(jwt)
+        print(user['uid'])
+        user = auth.get_user(user['uid'])
+        print(user.email)
+        print(user.photo_url)
+        bool = await check_user_email(user.email)
+        if( bool == False):
+            await insert_usuario(            
+            nombres=user.display_name,
+            correo=user.email,
+            direccion= "",
+            contraseña= generar_contraseña_segura(),
+            apellido="",
+            fecha_n= "null",
+            rol= "usuario",
+            edad= 0,
+            imagen= user.photo_url,
+            )
+
+
+        response = await login_auth_provider(user.email)
+        return response
         
     except Exception as e:
         print(e)
@@ -89,9 +184,9 @@ async def get_user_id(id:str):
 
 
 
+
 @router.get("/users/all", tags=["users"])
 async def get_all_users():
-    print(default_app.name)
     try:
         user = auth.get_user("yjFmIs1SPCWLcwMm4PEWBsXTu8U2")
         print(user.display_name)
