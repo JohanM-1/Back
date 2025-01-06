@@ -33,7 +33,7 @@ from firebase_admin import auth,credentials
 router = APIRouter()
 
 if not firebase_admin._apps:
-    cred = credentials.Certificate('./meta-snake-firebase-adminsdk-bu6li-2fdd879233.json')
+    cred = credentials.Certificate('./meta-snake-firebase-adminsdk.json')
     firebase_admin.initialize_app(cred)
     
 firebaseConfig = {
