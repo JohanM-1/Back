@@ -20,31 +20,6 @@ DB_USER = os.environ.get("DB_USER")
 DB_PASSWORD = os.environ.get("DB_PASSWORD")
 DB_NAME = os.environ.get("DB_NAME")
 
-async def create_database(user, password, host, port, dbname):
-    """
-    Crea la base de datos si no existe.
-
-    Args:
-        user: Nombre de usuario de la base de datos.
-        password: Contraseña del usuario.
-        host: Host de la base de datos.
-        port: Puerto de la base de datos.
-        dbname: Nombre de la base de datos a crear.
-    """
-    try:
-        # Conectar a la base de datos 'postgres' (la base de datos predeterminada)
-        conn = await asyncpg.connect(user=user, password=password, host=host, port=port, database="postgres")
-        await conn.execute(f"CREATE DATABASE {dbname}")
-        await conn.close()
-        print(f"Base de datos '{dbname}' creada exitosamente.")
-    except asyncpg.exceptions.DuplicateDatabaseError:
-        print(f"La base de datos '{dbname}' ya existe.")
-    except Exception as e:
-        print(f"Error al crear la base de datos: {e}")
-
-
-asyncio.run(create_database(user=DB_USER, password=DB_PASSWORD, host=DB_HOST, port=DB_PORT, dbname=DB_NAME))
-
 engine = create_async_engine(
         f"postgresql+asyncpg://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}",echo = True
     )
@@ -147,7 +122,28 @@ async def async_main() -> None:
     
 
 
+async def create_database(user, password, host, port, dbname):
+    """
+    Crea la base de datos si no existe.
 
+    Args:
+        user: Nombre de usuario de la base de datos.
+        password: Contraseña del usuario.
+        host: Host de la base de datos.
+        port: Puerto de la base de datos.
+        dbname: Nombre de la base de datos a crear.
+    """
+    try:
+        # Conectar a la base de datos 'postgres' (la base de datos predeterminada)
+        conn = await asyncpg.connect(user=user, password=password, host=host, port=port, database="postgres")
+        await conn.execute(f"CREATE DATABASE {dbname}")
+        await conn.close()
+        print(f"Base de datos '{dbname}' creada exitosamente.")
+    except asyncpg.exceptions.DuplicateDatabaseError:
+        print(f"La base de datos '{dbname}' ya existe.")
+    except Exception as e:
+        print(f"Error al crear la base de datos: {e}")
 
 if __name__ == "__main__":
+    asyncio.run(create_database(user=DB_USER, password=DB_PASSWORD, host=DB_HOST, port=DB_PORT, dbname=DB_NAME))
     asyncio.run(async_main())
