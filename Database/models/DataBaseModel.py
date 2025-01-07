@@ -5,12 +5,14 @@ import os
 from typing import List, Optional
 
 import asyncpg
+from dotenv import load_dotenv
 from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, func , Time ,Date
 from sqlalchemy.ext.asyncio import AsyncSession,create_async_engine,async_sessionmaker,AsyncAttrs
 from sqlalchemy.orm import declarative_base, relationship, mapped_column, Mapped,DeclarativeBase
 
 from sqlalchemy.ext.declarative import declared_attr
 
+load_dotenv('../.env')
 
 # Obtener valores de las variables de entorno
 API_KEY = os.environ.get("API_KEY")  # Valor por defecto de settings
