@@ -12,7 +12,20 @@ from sqlalchemy.orm import declarative_base, relationship, mapped_column, Mapped
 
 from sqlalchemy.ext.declarative import declared_attr
 
-load_dotenv('../.env')
+
+
+# Obtener la ruta absoluta del directorio actual
+current_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Ascender dos directorios y concatenar la ruta al archivo .env
+env_path = os.path.join(current_dir, '../../.env')
+
+# Cargar las variables de entorno desde el archivo .env
+# (Aquí deberías utilizar una librería como `dotenv` para cargar las variables)
+from dotenv import load_dotenv
+load_dotenv(dotenv_path=env_path)
+
+
 
 # Obtener valores de las variables de entorno
 API_KEY = os.environ.get("API_KEY")  # Valor por defecto de settings
