@@ -95,6 +95,7 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.toptal.com/developers/gitignore/api/windows,macos,linux,venv
+.venv/
 .meta-snake-firebase-adminsdk.json
 .venv/Scripts/watchfiles.exe
 .venv/Scripts/uvicorn.exe
