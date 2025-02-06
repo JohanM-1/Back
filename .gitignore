@@ -24,7 +24,8 @@ Icon
 
 # Alembic files
 alembic.ini
-alembic/
+alembic
+alembic/*
 migrations/
 versions/
 
