@@ -28,6 +28,7 @@ from jwt.exceptions import InvalidTokenError
 from passlib.context import CryptContext
 from pydantic import BaseModel, Field
 from firebase_admin import auth,credentials
+import os
 
 
 router = APIRouter()
@@ -36,15 +37,16 @@ if not firebase_admin._apps:
     cred = credentials.Certificate('./meta-snake-firebase-adminsdk.json')
     firebase_admin.initialize_app(cred)
     
+# Load config from environment variables or .env file
 firebaseConfig = {
-  "apiKey": "AIzaSyCIigZIzS2g7rk4JtAW1niMHrfoPSOYKGg",
-  'authDomain': "meta-snake.firebaseapp.com",
-  'projectId': "meta-snake",
-  'storageBucket': "meta-snake.appspot.com",
-  'messagingSenderId': "766715754129",
-  'appId': "1:766715754129:web:30c7a5df2637d4603cf130",
-  'measurementId': "G-7KXN4PRE0L",
-  'databaseURL' : ""
+    "apiKey": os.getenv('FIREBASE_API_KEY'),
+    'authDomain': os.getenv('FIREBASE_AUTH_DOMAIN'),
+    'projectId': os.getenv('FIREBASE_PROJECT_ID'),
+    'storageBucket': os.getenv('FIREBASE_STORAGE_BUCKET'),
+    'messagingSenderId': os.getenv('FIREBASE_MESSAGING_SENDER_ID'),
+    'appId': os.getenv('FIREBASE_APP_ID'),
+    'measurementId': os.getenv('FIREBASE_MEASUREMENT_ID'),
+    'databaseURL': os.getenv('FIREBASE_DATABASE_URL')
 }
 
 firebase = pyrebase.initialize_app(firebaseConfig)
