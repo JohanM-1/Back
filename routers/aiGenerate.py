@@ -64,7 +64,7 @@ async def create_upload_file(image: UploadFile):
 
 
     try:
-        # Intentar primero con Gemini con timeout de 30 segundos
+        # Intentar primero con Gemini con timeout de 5 segundos
         myfile = genai.upload_file("images/"+image_url)
         model = genai.GenerativeModel("gemini-1.5-flash")
 
@@ -86,7 +86,7 @@ async def create_upload_file(image: UploadFile):
             )
 
         try:
-            result = await asyncio.wait_for(get_gemini_response(), timeout=30.0)
+            result = await asyncio.wait_for(get_gemini_response(), timeout=1)
             formatted_json = json.loads(result.text)
             formatted_json["service"] = "Gemini"
         except asyncio.TimeoutError:
@@ -126,7 +126,7 @@ async def create_upload_file(image: UploadFile):
                 )
 
             try:
-                response = await asyncio.wait_for(get_chatgpt_response(), timeout=30.0)
+                response = await asyncio.wait_for(get_chatgpt_response(), timeout=1)
                 response_text = response.choices[0].message.content.strip()
                 
                 # Intentar encontrar el JSON en la respuesta
