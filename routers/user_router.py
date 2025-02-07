@@ -29,15 +29,37 @@ from passlib.context import CryptContext
 from pydantic import BaseModel, Field
 from firebase_admin import auth,credentials
 import os
+from dotenv import load_dotenv
 
 
 router = APIRouter()
 
-if not firebase_admin._apps:
-    cred = credentials.Certificate('./meta-snake-firebase-adminsdk.json')
-    firebase_admin.initialize_app(cred)
-    
-# Load config from environment variables or .env file
+# Cargar variables de entorno
+load_dotenv()
+
+def verify_firebase_credentials():
+    """Verifica si las credenciales de Firebase están configuradas correctamente"""
+    try:
+        if not os.path.exists(os.getenv('FIREBASE_CREDENTIALS_PATH')):
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Firebase credentials file not found"
+            )
+        
+        cred = credentials.Certificate(os.getenv('FIREBASE_CREDENTIALS_PATH'))
+        if not firebase_admin._apps:
+            firebase_admin.initialize_app(cred)
+        return True
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Firebase initialization error: {str(e)}"
+        )
+
+# Verificar credenciales al inicio
+verify_firebase_credentials()
+
+# Configuración de Firebase usando variables de entorno
 firebaseConfig = {
     "apiKey": os.getenv('FIREBASE_API_KEY'),
     'authDomain': os.getenv('FIREBASE_AUTH_DOMAIN'),
@@ -49,7 +71,23 @@ firebaseConfig = {
     'databaseURL': os.getenv('FIREBASE_DATABASE_URL')
 }
 
-firebase = pyrebase.initialize_app(firebaseConfig)
+# Verificar que todas las configuraciones necesarias estén presentes
+required_configs = ['apiKey', 'authDomain', 'projectId', 'storageBucket', 'messagingSenderId', 'appId']
+missing_configs = [key for key in required_configs if not firebaseConfig.get(key)]
+
+if missing_configs:
+    raise HTTPException(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        detail=f"Missing Firebase configurations: {', '.join(missing_configs)}"
+    )
+
+try:
+    firebase = pyrebase.initialize_app(firebaseConfig)
+except Exception as e:
+    raise HTTPException(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        detail=f"Firebase initialization error: {str(e)}"
+    )
 
 class Token (BaseModel):
     access_token: str
@@ -90,35 +128,67 @@ def generar_contraseña_segura(longitud=12):
 
 
 @router.post("/users/google-auth", tags=["users"])
-async def get_user_id(id:str):
-    
+async def get_user_id(id: str):
     try:
-        user = auth.get_user(id)
-        print(user.email)
-        print(user.photo_url)
-        bool = await check_user_email(user.email)
-        if( bool == False):
-            await insert_usuario(            
-            nombres=user.display_name,
-            correo=user.email,
-            direccion= "",
-            contraseña= id,
-            apellido="",
-            fecha_n= "null",
-            rol= "usuario",
-            edad= 0,
-            imagen= user.photo_url,
+        # Primero verificamos que Firebase esté correctamente inicializado
+        if not firebase_admin._apps:
+            verify_firebase_credentials()
+            
+        try:
+            # Intentamos obtener el usuario
+            user = auth.get_user(id)
+        except auth.InvalidIdTokenError:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid Firebase ID token"
+            )
+        except auth.ExpiredIdTokenError:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Firebase token has expired"
+            )
+        except auth.RevokedIdTokenError:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Firebase token has been revoked"
+            )
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail=f"Firebase authentication error: {str(e)}"
             )
 
+        # Si llegamos aquí, el token es válido
+        try:
+            bool = await check_user_email(user.email)
+            if not bool:
+                await insert_usuario(            
+                    nombres=user.display_name,
+                    correo=user.email,
+                    direccion="",
+                    contraseña=id,
+                    apellido="",
+                    fecha_n="null",
+                    rol="usuario",
+                    edad=0,
+                    imagen=user.photo_url,
+                )
 
-        response = await Login_Verificacion(user.email, id)
-        return response
-        
+            response = await Login_Verificacion(user.email, id)
+            return response
+            
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Database operation failed: {str(e)}"
+            )
+            
+    except HTTPException as he:
+        raise he
     except Exception as e:
-        print(e)
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password"
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Unexpected error: {str(e)}"
         )
 
 
@@ -324,4 +394,21 @@ async def login_user_route(user_data: UserLogin):
         return Response
     else:
         raise HTTPException(status_code=401, detail=Response.message)
+    
+
+@router.get("/firebase/test-credentials", tags=["users"])
+async def test_firebase_credentials():
+    try:
+        verify_firebase_credentials()
+        # Intenta una operación simple con Firebase
+        auth.get_user_by_email("test@test.com")
+        return {"status": "success", "message": "Firebase credentials are valid"}
+    except auth.UserNotFoundError:
+        # Este error es normal si el usuario no existe
+        return {"status": "success", "message": "Firebase credentials are valid"}
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Firebase credentials error: {str(e)}"
+        )
     
