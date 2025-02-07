@@ -121,5 +121,13 @@ $RECYCLE.BIN/
 
 # End of https://www.toptal.com/developers/gitignore/api/windows,macos,linux,venv
 .venv/
+.venv/*
+pyvenv.cfg
+
+# Application specific
+images/
+logs/
+gunicorn_start
+
 .meta-snake-firebase-adminsdk.json
 meta-snake-firebase-adminsdk.json
