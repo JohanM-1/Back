@@ -64,6 +64,7 @@ async def create_upload_file(image: UploadFile):
 
 
     try:
+        # Intentar primero con Gemini con timeout de 5 segundos
         myfile = genai.upload_file("images/"+image_url)
         model = genai.GenerativeModel("gemini-1.5-flash")
 
@@ -76,7 +77,7 @@ async def create_upload_file(image: UploadFile):
 
 
 
-        async def get_gemini_response():
+        def get_gemini_response():
             return model.generate_content(
                 ["identifica la serpiente de la imagen, si es venenosa o no y en la descripcion agregar que hacer en caso de una mordedura de esta serpiente como en un paso a pose, la respuesta debe ser en español", myfile],
                 generation_config=genai.GenerationConfig(
@@ -84,16 +85,15 @@ async def create_upload_file(image: UploadFile):
                 ),
             )
 
-        try:
-            result = await asyncio.wait_for(get_gemini_response())
-            formatted_json = json.loads(result.text)
-            formatted_json["service"] = "Gemini"
-        except asyncio.TimeoutError:
-            raise Exception("Timeout en Gemini")
+        # Remove async/await and asyncio
+        result = get_gemini_response()
+        formatted_json = json.loads(result.text)
+        formatted_json["service"] = "Gemini"
         
     except Exception as e:
         print(f"Gemini error: {str(e)}")
         try:
+            # Fallback a ChatGPT con timeout de 30 segundos
             client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
             
             # Leer la imagen y convertirla a base64
@@ -101,7 +101,7 @@ async def create_upload_file(image: UploadFile):
             image_data = image.file.read()
             base64_image = base64.b64encode(image_data).decode('utf-8')
             
-            async def get_chatgpt_response():
+            def get_chatgpt_response():
                 return client.chat.completions.create(
                     model="gpt-4o",
                     messages=[
@@ -123,35 +123,28 @@ async def create_upload_file(image: UploadFile):
                     ]
                 )
 
-            try:
-                response = await asyncio.wait_for(get_chatgpt_response())
-                response_text = response.choices[0].message.content.strip()
-                
-                # Intentar encontrar el JSON en la respuesta
-                try:
-                    # Buscar el primer { y último } en caso de que haya texto adicional
-                    start_idx = response_text.find('{')
-                    end_idx = response_text.rfind('}') + 1
-                    if start_idx != -1 and end_idx != 0:
-                        json_str = response_text[start_idx:end_idx]
-                        formatted_json = json.loads(json_str)
-                    else:
-                        raise json.JSONDecodeError("No JSON found", response_text, 0)
-                    
-                    formatted_json["service"] = "ChatGPT"
-                except json.JSONDecodeError as e:
-                    print(f"JSON Error: {str(e)}")
-                    print(f"Response received: {response_text}")
-                    raise HTTPException(
-                        status_code=500,
-                        detail="Error al procesar la respuesta del servicio de AI. Por favor intente nuevamente."
-                    )
-            except asyncio.TimeoutError:
-                raise HTTPException(
-                    status_code=504,
-                    detail="El servicio está tardando demasiado tiempo en responder. Por favor intente nuevamente."
-                )
+            response = get_chatgpt_response()
+            response_text = response.choices[0].message.content.strip()
             
+            # Intentar encontrar el JSON en la respuesta
+            try:
+                # Buscar el primer { y último } en caso de que haya texto adicional
+                start_idx = response_text.find('{')
+                end_idx = response_text.rfind('}') + 1
+                if start_idx != -1 and end_idx != 0:
+                    json_str = response_text[start_idx:end_idx]
+                    formatted_json = json.loads(json_str)
+                else:
+                    raise json.JSONDecodeError("No JSON found", response_text, 0)
+                
+                formatted_json["service"] = "ChatGPT"
+            except json.JSONDecodeError as e:
+                print(f"JSON Error: {str(e)}")
+                print(f"Response received: {response_text}")
+                raise HTTPException(
+                    status_code=500,
+                    detail="Error al procesar la respuesta del servicio de AI. Por favor intente nuevamente."
+                )
         except Exception as e:
             print(f"ChatGPT error: {str(e)}")
             raise HTTPException(
